@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraAthletic - Premium Fitness</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">AuraAthletic</a>
+            
+            <ul class="nav-links">
+                <li><a href="/" class="active">Home</a></li>
+                <li><a href="/schedule.html">Schedule</a></li>
+                <li><a href="/trainers.html">Trainers</a></li>
+                <li><a href="/admin.html">Admin</a></li>
+            </ul>
+            
+            <button class="menu-btn" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu">
+        <a href="/">Home</a>
+        <a href="/schedule.html">Schedule</a>
+        <a href="/trainers.html">Trainers</a>
+        <a href="/admin.html">Admin</a>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" style="background-image: url('images/hero-gym.jpg'); background-size: cover; background-position: center;">
+        <div class="hero-content">
+            <h1>Welcome to AuraAthletic</h1>
+            <p>Transform your body, elevate your mind. Join the premier fitness community.</p>
+            <a href="/schedule.html" class="btn-primary">View Schedule</a>
+            <a href="/trainers.html" class="btn-secondary">Meet Trainers</a>
+        </div>
+    </section>
+
+    <!-- Featured Classes Section -->
+    <div class="container">
+        <div class="section-header">
+            <h2>Featured Classes</h2>
+            <p>Discover our most popular fitness classes</p>
+        </div>
+        
+        <div class="class-grid" id="featured-classes">
+            <div style="text-align: center; grid-column: span 3;">Loading classes...</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 AuraAthletic. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Toggle mobile menu
+        function toggleMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('show');
+        }
+        
+        // Fetch and display featured classes
+        async function loadFeaturedClasses() {
+            try {
+                const response = await fetch('/api/classes');
+                const classes = await response.json();
+                
+                const container = document.getElementById('featured-classes');
+                
+                // Show first 3 classes as featured
+                const featured = classes.slice(0, 3);
+                
+                container.innerHTML = featured.map(classItem => `
+                    <div class="class-card">
+                        <div class="class-image">
+                            <img src="images/${getClassImage(classItem.name)}" alt="${classItem.name}" onerror="this.src='images/modern-gym.jpg'">
+                        </div>
+                        <div class="class-info">
+                            <h3>${classItem.name}</h3>
+                            <div class="class-meta">
+                                <span>🕐 ${formatTime(classItem.time)}</span>
+                                <span>📍 ${classItem.location}</span>
+                                <span>👤 ${classItem.instructor}</span>
+                            </div>
+                            <p>${classItem.description || 'Join this exciting class!'}</p>
+                            <div>
+                                <span class="tag ${classItem.difficulty}">${classItem.difficulty}</span>
+                            </div>
+                            <div class="spots">
+                                <strong>${classItem.maxCapacity - classItem.booked}</strong> spots left
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                console.error('Error loading classes:', error);
+                document.getElementById('featured-classes').innerHTML = `
+                    <div style="text-align: center; grid-column: span 3;">
+                        <p>Unable to load classes. Please make sure the server is running.</p>
+                    </div>
+                `;
+            }
+        }
+        
+        function formatTime(time) {
+            const [hours, minutes] = time.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            return `${hour12}:${minutes} ${ampm}`;
+        }
+        
+        function getClassImage(className) {
+            const name = className.toLowerCase();
+            if (name.includes('yoga')) return 'yoga-class.jpg';
+            if (name.includes('hiit')) return 'modern-gym.jpg';
+            if (name.includes('spin')) return 'luxury-gym.jpg';
+            if (name.includes('strength')) return 'modern-gym.jpg';
+            if (name.includes('zumba')) return 'group_G.png';
+            return 'modern-gym.jpg';
+        }
+        
+        // Load classes when page loads
+        loadFeaturedClasses();
+    </script>
+</body>
+</html>

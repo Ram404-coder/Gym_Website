@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraAthletic - Class Schedule</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="schedule.css">
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">AuraAthletic</a>
+            
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/schedule.html" class="active">Schedule</a></li>
+                <li><a href="/trainers.html">Trainers</a></li>
+                <li><a href="/admin.html">Admin</a></li>
+            </ul>
+            
+            <button class="menu-btn" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu">
+        <a href="/">Home</a>
+        <a href="/schedule.html">Schedule</a>
+        <a href="/trainers.html">Trainers</a>
+        <a href="/admin.html">Admin</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <div class="section-header">
+            <h2>Class Schedule</h2>
+            <p>Browse all available classes and book your spot</p>
+        </div>
+        
+        <!-- Filters -->
+        <div class="schedule-filters">
+            <input type="text" id="searchInput" class="search-box" placeholder="Search by class name or instructor..." onkeyup="filterClasses()">
+            <select id="dayFilter" class="filter-select" onchange="filterClasses()">
+                <option value="all">All Days</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+            </select>
+            <select id="difficultyFilter" class="filter-select" onchange="filterClasses()">
+                <option value="all">All Levels</option>
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+            </select>
+        </div>
+        
+        <!-- Schedule Table -->
+        <div style="overflow-x: auto;">
+            <table class="schedule-table" id="scheduleTable">
+                <thead>
+                    <tr>
+                        <th>Class</th>
+                        <th>Instructor</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Location</th>
+                        <th>Spots Left</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="scheduleBody">
+                    <tr><td colspan="7" style="text-align: center;">Loading classes...</td></tr>
+                </tbody>
+             </table>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="modal">
+        <div class="modal-content">
+            <h3>Confirm Booking</h3>
+            <p id="modalClassInfo"></p>
+            <div class="modal-actions">
+                <button class="btn-confirm" onclick="confirmBooking()">Confirm</button>
+                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 AuraAthletic. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let allClasses = [];
+        let selectedClass = null;
+        
+        function toggleMenu() {
+            document.getElementById('mobileMenu').classList.toggle('show');
+        }
+        
+        async function loadClasses() {
+            try {
+                const response = await fetch('/api/classes');
+                allClasses = await response.json();
+                renderTable(allClasses);
+            } catch (error) {
+                console.error('Error loading classes:', error);
+                document.getElementById('scheduleBody').innerHTML = '<tr><td colspan="7" style="text-align: center;">Failed to load classes. Make sure server is running.</td></tr>';
+            }
+        }
+        
+        function renderTable(classes) {
+            const tbody = document.getElementById('scheduleBody');
+            
+            if (classes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No classes found.</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = classes.map(classItem => {
+                const spotsLeft = classItem.maxCapacity - classItem.booked;
+                const isFull = spotsLeft === 0;
+                const statusClass = isFull ? 'status-full' : 'status-available';
+                const statusText = isFull ? 'Full' : `${spotsLeft} left`;
+                
+                return `
+                    <tr>
+                        <td><strong>${classItem.name}</strong></td>
+                        <td>${classItem.instructor}</td>
+                        <td>${formatDate(classItem.date)}</td>
+                        <td>${formatTime(classItem.time)}</td>
+                        <td>${classItem.location}</td>
+                        <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                        <td>
+                            ${!isFull ? 
+                                `<button class="btn-book-small" onclick="openBookingModal('${classItem._id}')">Book Now</button>` : 
+                                `<button class="btn-book-small" disabled>Full</button>`
+                            }
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function filterClasses() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const dayFilter = document.getElementById('dayFilter').value;
+            const difficultyFilter = document.getElementById('difficultyFilter').value;
+            
+            const filtered = allClasses.filter(classItem => {
+                const matchesSearch = classItem.name.toLowerCase().includes(searchTerm) || 
+                                     classItem.instructor.toLowerCase().includes(searchTerm);
+                const matchesDay = dayFilter === 'all' || classItem.date.includes(dayFilter);
+                const matchesDifficulty = difficultyFilter === 'all' || classItem.difficulty === difficultyFilter;
+                
+                return matchesSearch && matchesDay && matchesDifficulty;
+            });
+            
+            renderTable(filtered);
+        }
+        
+        function openBookingModal(classId) {
+            selectedClass = allClasses.find(c => c._id === classId);
+            if (selectedClass) {
+                document.getElementById('modalClassInfo').innerHTML = `
+                    <strong>${selectedClass.name}</strong><br>
+                    ${formatTime(selectedClass.time)} with ${selectedClass.instructor}<br>
+                    <span style="color: var(--success);">${selectedClass.maxCapacity - selectedClass.booked} spots available</span>
+                `;
+                document.getElementById('bookingModal').classList.add('show');
+            }
+        }
+        
+        async function confirmBooking() {
+            if (!selectedClass) return;
+            
+            try {
+                const response = await fetch('/api/bookings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        classId: selectedClass._id,
+                        userName: 'Guest User'
+                    })
+                });
+                
+                if (response.ok) {
+                    showNotification(`Successfully booked ${selectedClass.name}!`, 'success');
+                    await loadClasses();
+                    closeModal();
+                } else {
+                    const error = await response.json();
+                    showNotification(error.error || 'Booking failed', 'error');
+                }
+            } catch (error) {
+                showNotification('Error making booking', 'error');
+            }
+        }
+        
+        function closeModal() {
+            document.getElementById('bookingModal').classList.remove('show');
+            selectedClass = null;
+        }
+        
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.style.background = type === 'success' ? '#10b981' : '#ef4444';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        function formatTime(time) {
+            const [hours, minutes] = time.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            return `${hour12}:${minutes} ${ampm}`;
+        }
+        
+        function formatDate(date) {
+            return new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        }
+        
+        loadClasses();
+    </script>
+</body>
+</html>

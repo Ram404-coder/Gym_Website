@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraAthletic - Admin Panel</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">AuraAthletic</a>
+
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/schedule.html">Schedule</a></li>
+                <li><a href="/trainers.html">Trainers</a></li>
+                <li><a href="/admin.html" class="active">Admin</a></li>
+            </ul>
+
+            <button class="menu-btn" onclick="toggleMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu">
+        <a href="/">Home</a>
+        <a href="/schedule.html">Schedule</a>
+        <a href="/trainers.html">Trainers</a>
+        <a href="/admin.html">Admin</a>
+    </div>
+
+    <!-- Admin Header -->
+    <section class="admin-header">
+        <div class="admin-header-content">
+            <span class="admin-badge">Admin Dashboard</span>
+            <h2>Welcome Back, Admin</h2>
+            <p>Manage classes, track bookings, and monitor gym activity</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Stats Cards -->
+        <div class="admin-stats" id="adminStats">
+            <div class="stat-card">
+                <div class="stat-icon blue">📋</div>
+                <div class="stat-info">
+                    <h4>Total Classes</h4>
+                    <span class="stat-number" id="totalClasses">-</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">📅</div>
+                <div class="stat-info">
+                    <h4>Today's Bookings</h4>
+                    <span class="stat-number" id="totalBookings">-</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">⏳</div>
+                <div class="stat-info">
+                    <h4>Full Classes</h4>
+                    <span class="stat-number" id="fullClasses">-</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple">👥</div>
+                <div class="stat-info">
+                    <h4>Total Capacity</h4>
+                    <span class="stat-number" id="totalCapacity">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="admin-actions">
+            <button class="btn-primary" onclick="showAddClassForm()">➕ Add New Class</button>
+            <button class="btn-primary" onclick="exportSchedule()" style="background: var(--success);">📥 Export
+                Schedule</button>
+        </div>
+
+        <!-- Add/Edit Class Form -->
+        <div id="classFormSection" class="form-section hidden">
+            <div class="form-header">
+                <h3 id="formTitle">Add New Class</h3>
+                <p>Fill in the details below to create a new fitness class</p>
+            </div>
+            <form id="classForm" onsubmit="saveClass(event)">
+                <input type="hidden" id="editClassId">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Class Name *</label>
+                        <input type="text" id="className" required placeholder="e.g., Morning Yoga">
+                    </div>
+                    <div class="form-group">
+                        <label>Instructor *</label>
+                        <input type="text" id="instructorName" required placeholder="e.g., Sarah Johnson">
+                    </div>
+                </div>
+
+                <div class="form-row three-col">
+                    <div class="form-group">
+                        <label>Date *</label>
+                        <input type="date" id="classDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time *</label>
+                        <input type="time" id="classTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Duration (min) *</label>
+                        <input type="number" id="duration" required min="15" max="180" value="60">
+                    </div>
+                </div>
+
+                <div class="form-row three-col">
+                    <div class="form-group">
+                        <label>Location *</label>
+                        <select id="location" required>
+                            <option value="">Select Location</option>
+                            <option value="Studio A">Studio A</option>
+                            <option value="Studio B">Studio B</option>
+                            <option value="Main Gym">Main Gym</option>
+                            <option value="Spin Room">Spin Room</option>
+                            <option value="Weight Room">Weight Room</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Difficulty *</label>
+                        <select id="difficulty" required>
+                            <option value="">Select Level</option>
+                            <option value="beginner">Beginner</option>
+                            <option value="intermediate">Intermediate</option>
+                            <option value="advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Max Capacity *</label>
+                        <input type="number" id="maxCapacity" required min="1" max="50" value="20">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="description" rows="3" placeholder="Enter class description..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Class Tags</label>
+                    <div class="checkbox-group">
+                        <label class="checkbox-label"><input type="checkbox" value="cardio"> Cardio</label>
+                        <label class="checkbox-label"><input type="checkbox" value="strength"> Strength</label>
+                        <label class="checkbox-label"><input type="checkbox" value="flexibility"> Flexibility</label>
+                        <label class="checkbox-label"><input type="checkbox" value="dance"> Dance</label>
+                        <label class="checkbox-label"><input type="checkbox" value="mind-body"> Mind & Body</label>
+                        <label class="checkbox-label"><input type="checkbox" value="core"> Core</label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">Save Class</button>
+                    <button type="button" class="btn-secondary" onclick="hideForm()">Cancel</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Classes Table -->
+        <div class="classes-management">
+            <div class="section-header-row">
+                <div class="section-title">
+                    <h3>Manage Classes</h3>
+                    <p>View and manage all scheduled classes</p>
+                </div>
+                <div class="filter-group">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search classes..." onkeyup="searchClasses()">
+                    </div>
+                    <select id="dayFilter" class="filter-select" onchange="filterClasses()">
+                        <option value="all">All Days</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Class</th>
+                            <th>Instructor</th>
+                            <th>Date & Time</th>
+                            <th>Location</th>
+                            <th>Booked</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="classesTableBody">
+                        <tr>
+                            <td colspan="7" style="text-align: center;">Loading classes...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="recent-activity">
+            <h3>Recent Activity</h3>
+            <div class="activity-list" id="activityList">
+                <div class="activity-item">
+                    <div class="activity-icon booking">📖</div>
+                    <div class="activity-content">
+                        <p class="activity-text">Loading activities...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content modal-small">
+            <div class="modal-icon warning">⚠️</div>
+            <h3>Delete Class?</h3>
+            <p>Are you sure you want to delete this class? This action cannot be undone.</p>
+            <div class="modal-actions">
+                <button class="btn-danger" onclick="confirmDelete()">Delete</button>
+                <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2025 AuraAthletic. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let allClasses = [];
+        let classToDelete = null;
+
+        function toggleMenu() {
+            document.getElementById('mobileMenu').classList.toggle('show');
+        }
+
+        async function fetchClasses() {
+            try {
+                console.log('Fetching classes from /api/classes...');
+                const response = await fetch('/api/classes');
+                console.log('Response status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                allClasses = await response.json();
+                console.log('Classes received:', allClasses.length);
+
+                renderTable();
+                updateStats();
+                updateActivity();
+            } catch (error) {
+                console.error('Error fetching classes:', error);
+                document.getElementById('classesTableBody').innerHTML =
+                    '<tr><td colspan="7" style="text-align: center; color: red;">Error loading classes. Make sure server is running.</td></tr>';
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('classesTableBody');
+            if (allClasses.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No classes found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = allClasses.map(classItem => {
+                const spotsLeft = classItem.maxCapacity - classItem.booked;
+                const isFull = spotsLeft === 0;
+                const percent = (classItem.booked / classItem.maxCapacity) * 100;
+                const progressClass = percent >= 100 ? 'danger' : (percent >= 80 ? 'warning' : '');
+
+                return `
+                    <tr>
+                        <td><div class="class-cell"><span class="class-dot ${classItem.difficulty}"></span>${classItem.name}</div></td>
+                        <td>${classItem.instructor}</td>
+                        <td>${formatDate(classItem.date)} - ${formatTime(classItem.time)}</td>
+                        <td>${classItem.location}</td>
+                        <td><div class="progress-cell"><span>${classItem.booked}/${classItem.maxCapacity}</span><div class="progress-bar"><div class="progress-fill ${progressClass}" style="width: ${Math.min(percent, 100)}%"></div></div></div></td>
+                        <td><span class="status-badge ${isFull ? 'full' : 'active'}">${isFull ? 'Full' : 'Active'}</span></td>
+                        <td><button class="btn-icon btn-edit" onclick="editClass('${classItem._id}')">✏️</button><button class="btn-icon btn-delete" onclick="deleteClass('${classItem._id}')">🗑️</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function updateStats() {
+            try {
+                const response = await fetch('/api/admin/stats');
+                const stats = await response.json();
+                document.getElementById('totalClasses').textContent = stats.totalClasses || 0;
+                document.getElementById('totalBookings').textContent = stats.totalBookings || 0;
+                document.getElementById('fullClasses').textContent = stats.fullClasses || 0;
+                document.getElementById('totalCapacity').textContent = stats.totalCapacity || 0;
+            } catch (error) {
+                console.error('Error fetching stats:', error);
+            }
+        }
+
+        async function updateActivity() {
+            try {
+                const response = await fetch('/api/bookings');
+                const bookings = await response.json();
+                const recent = bookings.slice(-3).reverse();
+                const activityList = document.getElementById('activityList');
+                if (recent.length > 0) {
+                    activityList.innerHTML = recent.map(b => `
+                        <div class="activity-item">
+                            <div class="activity-icon booking">📖</div>
+                            <div class="activity-content">
+                                <p class="activity-text">New booking: <strong>${b.className}</strong></p>
+                                <span class="activity-time">${new Date(b.bookedAt).toLocaleTimeString()}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error fetching activity:', error);
+            }
+        }
+
+        function showAddClassForm() {
+            document.getElementById('classFormSection').classList.remove('hidden');
+            document.getElementById('formTitle').textContent = 'Add New Class';
+            document.getElementById('classForm').reset();
+            document.getElementById('editClassId').value = '';
+            document.getElementById('classDate').valueAsDate = new Date();
+        }
+
+        function hideForm() {
+            document.getElementById('classFormSection').classList.add('hidden');
+        }
+
+        async function saveClass(event) {
+            event.preventDefault();
+            const classData = {
+                name: document.getElementById('className').value,
+                instructor: document.getElementById('instructorName').value,
+                date: document.getElementById('classDate').value,
+                time: document.getElementById('classTime').value,
+                duration: parseInt(document.getElementById('duration').value),
+                location: document.getElementById('location').value,
+                difficulty: document.getElementById('difficulty').value,
+                maxCapacity: parseInt(document.getElementById('maxCapacity').value),
+                description: document.getElementById('description').value,
+                tags: Array.from(document.querySelectorAll('.checkbox-group input:checked')).map(cb => cb.value),
+                status: 'active'
+            };
+
+            const editId = document.getElementById('editClassId').value;
+            const url = editId ? `/api/admin/classes/${editId}` : '/api/admin/classes';
+            const method = editId ? 'PUT' : 'POST';
+
+            try {
+                const response = await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(classData)
+                });
+                if (response.ok) {
+                    alert(editId ? 'Class updated!' : 'Class added!');
+                    hideForm();
+                    fetchClasses();
+                } else {
+                    alert('Error saving class');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error saving class');
+            }
+        }
+
+        async function editClass(classId) {
+            const classItem = allClasses.find(c => c._id === classId);
+            if (!classItem) return;
+
+            document.getElementById('editClassId').value = classId;
+            document.getElementById('className').value = classItem.name;
+            document.getElementById('instructorName').value = classItem.instructor;
+            document.getElementById('classDate').value = classItem.date;
+            document.getElementById('classTime').value = classItem.time;
+            document.getElementById('duration').value = classItem.duration;
+            document.getElementById('location').value = classItem.location;
+            document.getElementById('difficulty').value = classItem.difficulty;
+            document.getElementById('maxCapacity').value = classItem.maxCapacity;
+            document.getElementById('description').value = classItem.description || '';
+
+            document.querySelectorAll('.checkbox-group input').forEach(cb => {
+                cb.checked = classItem.tags?.includes(cb.value);
+            });
+
+            document.getElementById('formTitle').textContent = 'Edit Class';
+            document.getElementById('classFormSection').classList.remove('hidden');
+        }
+
+        function deleteClass(classId) {
+            classToDelete = classId;
+            document.getElementById('deleteModal').classList.add('show');
+        }
+
+        async function confirmDelete() {
+            if (classToDelete) {
+                try {
+                    const response = await fetch(`/api/admin/classes/${classToDelete}`, { method: 'DELETE' });
+                    if (response.ok) {
+                        alert('Class deleted!');
+                        fetchClasses();
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+            closeDeleteModal();
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('show');
+            classToDelete = null;
+        }
+
+        function searchClasses() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = allClasses.filter(c => c.name.toLowerCase().includes(term) || c.instructor.toLowerCase().includes(term));
+            const tbody = document.getElementById('classesTableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No matching classes</td></tr>';
+                return;
+            }
+            tbody.innerHTML = filtered.map(classItem => {
+                const spotsLeft = classItem.maxCapacity - classItem.booked;
+                const isFull = spotsLeft === 0;
+                const percent = (classItem.booked / classItem.maxCapacity) * 100;
+                const progressClass = percent >= 100 ? 'danger' : (percent >= 80 ? 'warning' : '');
+                return `<tr><td><div class="class-cell"><span class="class-dot ${classItem.difficulty}"></span>${classItem.name}</div></td><td>${classItem.instructor}</td><td>${formatDate(classItem.date)} - ${formatTime(classItem.time)}</td><td>${classItem.location}</td><td><div class="progress-cell"><span>${classItem.booked}/${classItem.maxCapacity}</span><div class="progress-bar"><div class="progress-fill ${progressClass}" style="width: ${Math.min(percent, 100)}%"></div></div></div></td><td><span class="status-badge ${isFull ? 'full' : 'active'}">${isFull ? 'Full' : 'Active'}</span></td><td><button class="btn-icon btn-edit" onclick="editClass('${classItem._id}')">✏️</button><button class="btn-icon btn-delete" onclick="deleteClass('${classItem._id}')">🗑️</button></td></tr>`;
+            }).join('');
+        }
+
+        function filterClasses() {
+            const day = document.getElementById('dayFilter').value;
+            if (day === 'all') {
+                renderTable();
+                return;
+            }
+            const filtered = allClasses.filter(c => new Date(c.date).toLocaleDateString('en-US', { weekday: 'long' }) === day);
+            const tbody = document.getElementById('classesTableBody');
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No classes on ${day}</td></tr>';
+                return;
+            }
+            tbody.innerHTML = filtered.map(classItem => {
+                const spotsLeft = classItem.maxCapacity - classItem.booked;
+                const isFull = spotsLeft === 0;
+                const percent = (classItem.booked / classItem.maxCapacity) * 100;
+                const progressClass = percent >= 100 ? 'danger' : (percent >= 80 ? 'warning' : '');
+                return `<tr><td><div class="class-cell"><span class="class-dot ${classItem.difficulty}"></span>${classItem.name}</div></td><td>${classItem.instructor}</td><td>${formatDate(classItem.date)} - ${formatTime(classItem.time)}</td><td>${classItem.location}</td><td><div class="progress-cell"><span>${classItem.booked}/${classItem.maxCapacity}</span><div class="progress-bar"><div class="progress-fill ${progressClass}" style="width: ${Math.min(percent, 100)}%"></div></div></div></td><td><span class="status-badge ${isFull ? 'full' : 'active'}">${isFull ? 'Full' : 'Active'}</span></td><td><button class="btn-icon btn-edit" onclick="editClass('${classItem._id}')">✏️</button><button class="btn-icon btn-delete" onclick="deleteClass('${classItem._id}')">🗑️</button></td></tr>`;
+            }).join('');
+        }
+
+        function exportSchedule() {
+            let csv = 'Class,Instructor,Date,Time,Location,Capacity,Booked,Status\n';
+            allClasses.forEach(c => {
+                csv += `"${c.name}",${c.instructor},${c.date},${c.time},${c.location},${c.maxCapacity},${c.booked},${c.booked >= c.maxCapacity ? 'Full' : 'Active'}\n`;
+            });
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'auraathletic_schedule.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function formatTime(time) {
+            const [hours, minutes] = time.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            return `${hour12}:${minutes} ${ampm}`;
+        }
+
+        function formatDate(date) {
+            return new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        }
+
+        fetchClasses();
+    </script>
+</body>
+
+</html>
