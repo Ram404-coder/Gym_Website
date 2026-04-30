@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weekly Plan Details</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #f2f6f3 0%, #dde9df 100%);
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      display: grid;
+      place-items: center;
+    }
+    .page {
+      width: min(100%, 820px);
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(26, 26, 26, 0.08);
+      border-radius: 22px;
+      padding: 1.5rem;
+      box-shadow: 0 24px 60px rgba(17, 24, 39, 0.08);
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+      color: #555;
+      font-size: 14px;
+      margin-bottom: 1.25rem;
+    }
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #5f7c64;
+      margin-bottom: 0.6rem;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .hero-copy, .hero-card, .panel {
+      border-radius: 18px;
+      padding: 1.35rem;
+      border: 1px solid rgba(26, 26, 26, 0.08);
+      background: #fff;
+    }
+    .hero-copy {
+      background: #f4f9f4;
+    }
+    .hero-copy h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1;
+      margin-bottom: 0.8rem;
+      font-weight: 600;
+    }
+    .hero-copy p, .summary p {
+      color: #526055;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .hero-card {
+      background: #17321f;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      background: #dfeee0;
+      color: #33543b;
+      border-radius: 999px;
+      padding: 0.45rem 0.75rem;
+      font-size: 12px;
+      margin-bottom: 1rem;
+    }
+    .price {
+      font-size: 2.5rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+    .price span {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.75);
+      font-weight: 400;
+    }
+    .card-note {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.5;
+    }
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .panel h2 {
+      font-size: 1rem;
+      margin-bottom: 0.85rem;
+    }
+    .feature-list {
+      list-style: none;
+      display: grid;
+      gap: 0.7rem;
+      color: #3f4c43;
+      font-size: 14px;
+    }
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+    .feature-list li::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #4e9160;
+      flex-shrink: 0;
+    }
+    .summary {
+      display: grid;
+      gap: 0.8rem;
+    }
+    .cta-row {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 0.95rem 1.2rem;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+      text-align: center;
+    }
+    .button.primary {
+      background: #17321f;
+      color: #fff;
+      flex: 1 1 220px;
+    }
+    .button.secondary {
+      background: #e7efe8;
+      color: #17321f;
+      flex: 1 1 180px;
+    }
+    @media (max-width: 720px) {
+      .hero, .content { grid-template-columns: 1fr; }
+      .page { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <a class="back-link" href="gym-plans.html">&#8592; Back to plans</a>
+    <p class="eyebrow">Weekly Membership</p>
+    <div class="hero">
+      <section class="hero-copy">
+        <div class="pill" id="plan-tag">7-day access</div>
+        <h1 id="plan-name">Basic weekly</h1>
+        <p id="plan-desc">A full week of training access with the essentials covered.</p>
+      </section>
+      <aside class="hero-card">
+        <div>
+          <p class="eyebrow" style="color: rgba(255,255,255,0.65); margin-bottom: 0.9rem;">Weekly price</p>
+          <p class="price" id="plan-price">£30 <span>/ week</span></p>
+        </div>
+        <p class="card-note" id="plan-note">Flexible weekly access for short-term routines, travel, or trial periods.</p>
+      </aside>
+    </div>
+
+    <section class="content">
+      <div class="panel">
+        <h2>Included in this plan</h2>
+        <ul class="feature-list" id="feature-list"></ul>
+      </div>
+      <div class="panel">
+        <h2>Plan summary</h2>
+        <div class="summary">
+          <p id="summary-copy">This weekly membership gives you 7 days of gym access with changing-room facilities included.</p>
+          <p>Use this page for checkout, enquiries, or to connect the selected weekly plan to your registration flow.</p>
+        </div>
+        <div class="cta-row">
+          <a class="button primary" id="checkout-link" href="checkout.html?plan=basic-weekly">Continue to checkout</a>
+          <a class="button secondary" href="gym-plans.html">Choose another plan</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const weeklyPlans = {
+      "basic-weekly": {
+        tag: "7-day access",
+        name: "Basic weekly",
+        desc: "Seven days of gym access with lockers and showers included.",
+        price: "£30",
+        per: "/ week",
+        note: "A simple weekly option for steady training without extras.",
+        summary: "You selected the Basic weekly plan. It covers full gym access and facilities for one full week.",
+        features: [
+          "Full gym access",
+          "Locker and shower",
+          "Ideal for short-term schedules",
+          "No long membership commitment"
+        ]
+      },
+      "standard-weekly": {
+        tag: "Best value",
+        name: "Standard weekly",
+        desc: "Seven days of gym access plus unlimited instructor-led group classes.",
+        price: "£45",
+        per: "/ week",
+        note: "A balanced plan for members who want structure and class variety all week.",
+        summary: "You selected the Standard weekly plan. It includes gym access, facilities, and unlimited classes for seven days.",
+        features: [
+          "Full gym access",
+          "Locker and shower",
+          "Unlimited group classes",
+          "Great for a packed training week"
+        ]
+      },
+      "premium-weekly": {
+        tag: "All-inclusive",
+        name: "Premium weekly",
+        desc: "Seven days of access with classes plus a personal-training session included.",
+        price: "£65",
+        per: "/ week",
+        note: "The most complete weekly option for a guided and flexible experience.",
+        summary: "You selected the Premium weekly plan. It includes gym access, classes, and one PT session during the week.",
+        features: [
+          "Full gym access",
+          "Locker and shower",
+          "Unlimited group classes",
+          "1 PT session included"
+        ]
+      }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const selectedPlan = params.get("plan");
+    const plan = weeklyPlans[selectedPlan] || weeklyPlans["basic-weekly"];
+
+    document.getElementById("plan-tag").textContent = plan.tag;
+    document.getElementById("plan-name").textContent = plan.name;
+    document.getElementById("plan-desc").textContent = plan.desc;
+    document.getElementById("plan-price").innerHTML = `${plan.price} <span>${plan.per}</span>`;
+    document.getElementById("plan-note").textContent = plan.note;
+    document.getElementById("summary-copy").textContent = plan.summary;
+    document.getElementById("feature-list").innerHTML = plan.features.map((feature) => `<li>${feature}</li>`).join("");
+    document.getElementById("checkout-link").href = `checkout.html?plan=${encodeURIComponent(selectedPlan || "basic-weekly")}`;
+  </script>
+</body>
+</html>
