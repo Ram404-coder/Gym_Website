@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f3efe8;
+      --ink: #1c1c1c;
+      --muted: #6b665e;
+      --line: rgba(28, 28, 28, 0.1);
+      --accent: #1f6f46;
+      --accent-soft: #e3f1e8;
+      --panel: rgba(255, 255, 255, 0.94);
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(255, 255, 255, 0.7), transparent 28%),
+        linear-gradient(180deg, #f8f5ef 0%, var(--bg) 100%);
+      color: var(--ink);
+      padding: 2rem 1rem;
+    }
+    .shell {
+      max-width: 1080px;
+      margin: 0 auto;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 1rem;
+    }
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #7a725f;
+      margin-bottom: 0.6rem;
+    }
+    .header {
+      margin-bottom: 1.5rem;
+    }
+    .header h1 {
+      font-size: clamp(2rem, 5vw, 3.75rem);
+      line-height: 0.96;
+      font-weight: 650;
+      margin-bottom: 0.65rem;
+    }
+    .header p {
+      color: var(--muted);
+      max-width: 56ch;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 1.25fr 0.9fr;
+      gap: 1rem;
+      align-items: start;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(17, 24, 39, 0.06);
+    }
+    .form-panel {
+      padding: 1.4rem;
+    }
+    .summary-panel {
+      padding: 1.25rem;
+      position: sticky;
+      top: 1rem;
+    }
+    .section-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .field {
+      display: grid;
+      gap: 0.45rem;
+    }
+    .field.full {
+      grid-column: 1 / -1;
+    }
+    label {
+      font-size: 13px;
+      color: #504a41;
+    }
+    input, select {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 0.95rem 1rem;
+      font-size: 14px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+    }
+    input:focus, select:focus {
+      border-color: rgba(31, 111, 70, 0.55);
+      box-shadow: 0 0 0 4px rgba(31, 111, 70, 0.08);
+    }
+    .payment-strip {
+      display: flex;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+    .payment-chip {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: #444;
+      border-radius: 999px;
+      padding: 0.65rem 0.9rem;
+      font-size: 13px;
+    }
+    .actions {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      margin-top: 1.1rem;
+    }
+    .button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 0.95rem 1.2rem;
+      font-size: 14px;
+      cursor: pointer;
+      text-decoration: none;
+      text-align: center;
+    }
+    .button.primary {
+      flex: 1 1 240px;
+      background: var(--accent);
+      color: #fff;
+    }
+    .button.secondary {
+      flex: 1 1 180px;
+      background: #ece7dd;
+      color: var(--ink);
+    }
+    .plan-card {
+      background: #171717;
+      color: #fff;
+      border-radius: 20px;
+      padding: 1.1rem;
+      margin-bottom: 1rem;
+    }
+    .plan-card .tag {
+      display: inline-flex;
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.8);
+      border-radius: 999px;
+      padding: 0.4rem 0.7rem;
+      font-size: 12px;
+      margin-bottom: 0.9rem;
+    }
+    .plan-card h2 {
+      font-size: 1.35rem;
+      margin-bottom: 0.35rem;
+    }
+    .plan-card p {
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.5;
+      font-size: 14px;
+    }
+    .price {
+      font-size: 2rem;
+      font-weight: 650;
+      margin-top: 1rem;
+    }
+    .price span {
+      font-size: 0.95rem;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.72);
+    }
+    .summary-list {
+      list-style: none;
+      display: grid;
+      gap: 0.75rem;
+      margin: 1rem 0 1.2rem;
+      color: #474239;
+      font-size: 14px;
+    }
+    .summary-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+    .summary-list li::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+    .totals {
+      border-top: 1px solid var(--line);
+      padding-top: 1rem;
+      display: grid;
+      gap: 0.75rem;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      font-size: 14px;
+      color: #4a443a;
+    }
+    .row.total {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .status {
+      margin-top: 1rem;
+      background: var(--accent-soft);
+      color: #295238;
+      border-radius: 16px;
+      padding: 0.9rem 1rem;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    @media (max-width: 860px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+      .summary-panel {
+        position: static;
+      }
+    }
+    @media (max-width: 640px) {
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <a class="back-link" id="back-link" href="gym-plans.html">&#8592; Back</a>
+    <header class="header">
+      <p class="eyebrow">Checkout</p>
+      <h1>Complete your membership.</h1>
+      <p>Review the selected plan, enter your details, and continue to payment. This page is ready to act as the next step after any day, weekly, or monthly plan selection.</p>
+    </header>
+
+    <section class="layout">
+      <div class="panel form-panel">
+        <h2 class="section-title">Member details</h2>
+        <div class="field-grid">
+          <div class="field">
+            <label for="first-name">First name</label>
+            <input id="first-name" type="text" placeholder="Alex" />
+          </div>
+          <div class="field">
+            <label for="last-name">Last name</label>
+            <input id="last-name" type="text" placeholder="Morgan" />
+          </div>
+          <div class="field full">
+            <label for="email">Email address</label>
+            <input id="email" type="email" placeholder="alex@email.com" />
+          </div>
+          <div class="field">
+            <label for="phone">Phone number</label>
+            <input id="phone" type="tel" placeholder="+44 7700 900123" />
+          </div>
+          <div class="field">
+            <label for="start-date">Start date</label>
+            <input id="start-date" type="date" />
+          </div>
+        </div>
+
+        <h2 class="section-title">Payment method</h2>
+        <div class="payment-strip">
+          <span class="payment-chip">Visa</span>
+          <span class="payment-chip">Mastercard</span>
+          <span class="payment-chip">Apple Pay</span>
+        </div>
+        <div class="field-grid">
+          <div class="field full">
+            <label for="card-name">Name on card</label>
+            <input id="card-name" type="text" placeholder="Alex Morgan" />
+          </div>
+          <div class="field full">
+            <label for="card-number">Card number</label>
+            <input id="card-number" type="text" placeholder="1234 5678 9012 3456" />
+          </div>
+          <div class="field">
+            <label for="expiry">Expiry</label>
+            <input id="expiry" type="text" placeholder="MM / YY" />
+          </div>
+          <div class="field">
+            <label for="cvv">CVV</label>
+            <input id="cvv" type="text" placeholder="123" />
+          </div>
+          <div class="field full">
+            <label for="location">Preferred club location</label>
+            <select id="location">
+              <option>Central London</option>
+              <option>Canary Wharf</option>
+              <option>Shoreditch</option>
+              <option>Manchester City</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a class="button secondary" id="change-plan-link" href="gym-plans.html">Change plan</a>
+          <a class="button primary" href="#">Pay now</a>
+        </div>
+      </div>
+
+      <aside class="panel summary-panel">
+        <div class="plan-card">
+          <span class="tag" id="plan-tag">Selected plan</span>
+          <h2 id="plan-name">Single day</h2>
+          <p id="plan-desc">One-time gym access for solo training, cardio, or strength work.</p>
+          <p class="price" id="plan-price">£8 <span>/ day</span></p>
+        </div>
+
+        <h2 class="section-title">Your plan includes</h2>
+        <ul class="summary-list" id="feature-list"></ul>
+
+        <div class="totals">
+          <div class="row">
+            <span>Plan</span>
+            <span id="subtotal">£8</span>
+          </div>
+          <div class="row">
+            <span>Joining fee</span>
+            <span id="joining-fee">£0</span>
+          </div>
+          <div class="row total">
+            <span>Total today</span>
+            <span id="total-price">£8</span>
+          </div>
+        </div>
+
+        <p class="status" id="plan-note">Your selected membership is ready for payment and setup.</p>
+      </aside>
+    </section>
+  </main>
+
+  <script>
+    const plans = {
+      "single-day": {
+        family: "day-pass.html",
+        tag: "Day pass",
+        name: "Single day",
+        desc: "One-time gym access for solo training, cardio, or strength work.",
+        price: "£8",
+        per: "/ day",
+        note: "A quick one-visit pass with no recurring commitment.",
+        features: [
+          "Full gym access",
+          "Locker and shower",
+          "Fast check-in at reception"
+        ]
+      },
+      "day-class": {
+        family: "day-pass.html",
+        tag: "Popular day pass",
+        name: "Day + class",
+        desc: "A day pass with one instructor-led class included in the same visit.",
+        price: "£12",
+        per: "/ day",
+        note: "Flexible access plus one group class in a single booking.",
+        features: [
+          "Full gym access",
+          "Locker and shower",
+          "1 group class included"
+        ]
+      },
+      "basic-weekly": {
+        family: "weekly-plan.html",
+        tag: "Weekly membership",
+        name: "Basic weekly",
+        desc: "Seven days of gym access with lockers and showers included.",
+        price: "£30",
+        per: "/ week",
+        note: "A focused weekly plan for short-term routines or travel.",
+        features: [
+          "Full gym access",
+          "Locker and shower",
+          "7-day access window"
+        ]
+      },
+      "standard-weekly": {
+        family: "weekly-plan.html",
+        tag: "Best-value weekly",
+        name: "Standard weekly",
+        desc: "Seven days of gym access plus unlimited instructor-led group classes.",
+        price: "£45",
+        per: "/ week",
+        note: "A full weekly setup with classes included throughout the week.",
+        features: [
+          "Full gym access",
+          "Locker and shower",
+          "Unlimited classes"
+        ]
+      },
+      "premium-weekly": {
+        family: "weekly-plan.html",
+        tag: "Premium weekly",
+        name: "Premium weekly",
+        desc: "Seven days of access with classes plus a personal-training session included.",
+        price: "£65",
+        per: "/ week",
+        note: "A guided weekly option with coaching support included.",
+        features: [
+          "Full gym access",
+          "Unlimited classes",
+          "1 PT session included"
+        ]
+      },
+      "basic-monthly": {
+        family: "monthly-plan.html",
+        tag: "Monthly membership",
+        name: "Basic",
+        desc: "A low-cost monthly option focused on gym-floor access and essentials.",
+        price: "£25",
+        per: "/ month",
+        note: "A recurring monthly membership for consistent training.",
+        features: [
+          "Full gym access",
+          "Locker and shower",
+          "Monthly savings"
+        ]
+      },
+      "standard-monthly": {
+        family: "monthly-plan.html",
+        tag: "Popular monthly",
+        name: "Standard",
+        desc: "A complete monthly membership with unlimited classes included.",
+        price: "£45",
+        per: "/ month",
+        note: "A balanced monthly option for members who want variety and routine.",
+        features: [
+          "Full gym access",
+          "Unlimited classes",
+          "Locker and shower"
+        ]
+      },
+      "premium-monthly": {
+        family: "monthly-plan.html",
+        tag: "Premium monthly",
+        name: "Premium",
+        desc: "A high-touch monthly plan with classes and four PT sessions included.",
+        price: "£75",
+        per: "/ month",
+        note: "A top-tier monthly membership with coaching built in.",
+        features: [
+          "Full gym access",
+          "Unlimited classes",
+          "4 PT sessions per month"
+        ]
+      }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const selectedPlan = params.get("plan");
+    const plan = plans[selectedPlan] || plans["single-day"];
+    const planKey = selectedPlan || "single-day";
+
+    document.getElementById("plan-tag").textContent = plan.tag;
+    document.getElementById("plan-name").textContent = plan.name;
+    document.getElementById("plan-desc").textContent = plan.desc;
+    document.getElementById("plan-price").innerHTML = `${plan.price} <span>${plan.per}</span>`;
+    document.getElementById("subtotal").textContent = plan.price;
+    document.getElementById("total-price").textContent = plan.price;
+    document.getElementById("plan-note").textContent = plan.note;
+    document.getElementById("feature-list").innerHTML = plan.features.map((feature) => `<li>${feature}</li>`).join("");
+    document.getElementById("back-link").href = `${plan.family}?plan=${encodeURIComponent(planKey)}`;
+    document.getElementById("change-plan-link").href = `${plan.family}?plan=${encodeURIComponent(planKey)}`;
+
+    const dateField = document.getElementById("start-date");
+    const today = new Date();
+    const offset = today.getTimezoneOffset();
+    const localDate = new Date(today.getTime() - offset * 60000).toISOString().split("T")[0];
+    dateField.value = localDate;
+  </script>
+</body>
+</html>
