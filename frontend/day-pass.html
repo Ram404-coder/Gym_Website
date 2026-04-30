@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Day Pass Details</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #f6f4ef 0%, #ece9e1 100%);
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      display: grid;
+      place-items: center;
+    }
+    .page {
+      width: min(100%, 760px);
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(26, 26, 26, 0.08);
+      border-radius: 22px;
+      padding: 1.5rem;
+      box-shadow: 0 24px 60px rgba(17, 24, 39, 0.08);
+      backdrop-filter: blur(10px);
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+      color: #555;
+      font-size: 14px;
+      margin-bottom: 1.25rem;
+    }
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #6f6b63;
+      margin-bottom: 0.6rem;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 1rem;
+      align-items: stretch;
+      margin-bottom: 1.5rem;
+    }
+    .hero-copy, .hero-card {
+      border-radius: 18px;
+      padding: 1.4rem;
+    }
+    .hero-copy {
+      background: #f7f4ee;
+      border: 1px solid rgba(26, 26, 26, 0.05);
+    }
+    .hero-copy h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1;
+      margin-bottom: 0.8rem;
+      font-weight: 600;
+    }
+    .hero-copy p {
+      color: #5e5a53;
+      font-size: 15px;
+      line-height: 1.6;
+      max-width: 46ch;
+    }
+    .hero-card {
+      background: #161616;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .price {
+      font-size: 2.5rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+    .price span {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.75);
+      font-weight: 400;
+    }
+    .card-note {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.5;
+    }
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .panel {
+      background: #fff;
+      border: 1px solid rgba(26, 26, 26, 0.08);
+      border-radius: 18px;
+      padding: 1.25rem;
+    }
+    .panel h2 {
+      font-size: 1rem;
+      margin-bottom: 0.85rem;
+    }
+    .feature-list {
+      list-style: none;
+      display: grid;
+      gap: 0.7rem;
+      color: #444;
+      font-size: 14px;
+    }
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+    .feature-list li::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #378add;
+      flex-shrink: 0;
+    }
+    .summary {
+      display: grid;
+      gap: 0.8rem;
+      color: #555;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .cta-row {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 0.95rem 1.2rem;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+      text-align: center;
+    }
+    .button.primary {
+      background: #1a1a1a;
+      color: #fff;
+      flex: 1 1 220px;
+    }
+    .button.secondary {
+      background: #efebe2;
+      color: #1a1a1a;
+      flex: 1 1 180px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: #efe8da;
+      color: #5f5238;
+      border-radius: 999px;
+      padding: 0.45rem 0.75rem;
+      font-size: 12px;
+      margin-bottom: 1rem;
+    }
+    @media (max-width: 720px) {
+      .hero, .content { grid-template-columns: 1fr; }
+      .page { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <a class="back-link" href="gym-plans.html">&#8592; Back to plans</a>
+    <p class="eyebrow">Day Pass</p>
+    <div class="hero">
+      <section class="hero-copy">
+        <div class="pill" id="pass-tag">Selected pass</div>
+        <h1 id="plan-name">Single day</h1>
+        <p id="plan-desc">One-time gym access for training when it suits you.</p>
+      </section>
+      <aside class="hero-card">
+        <div>
+          <p class="eyebrow" style="color: rgba(255,255,255,0.65); margin-bottom: 0.9rem;">Today’s access</p>
+          <p class="price" id="plan-price">£8 <span>/ day</span></p>
+        </div>
+        <p class="card-note" id="plan-note">A simple pass for a focused workout with no ongoing commitment.</p>
+      </aside>
+    </div>
+
+    <section class="content">
+      <div class="panel">
+        <h2>What’s included</h2>
+        <ul class="feature-list" id="feature-list"></ul>
+      </div>
+      <div class="panel">
+        <h2>Next step</h2>
+        <div class="summary">
+          <p id="summary-copy">You selected a flexible day pass with one-time access to the gym floor and changing facilities.</p>
+          <p>Use this page as your follow-up step for payment, member details, or booking confirmation.</p>
+        </div>
+        <div class="cta-row">
+          <a class="button primary" id="checkout-link" href="checkout.html?plan=single-day">Continue to checkout</a>
+          <a class="button secondary" href="gym-plans.html">Choose another plan</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const dayPassPlans = {
+      "single-day": {
+        tag: "One-time access",
+        name: "Single day",
+        desc: "One-time gym access for solo training, cardio, or strength work.",
+        price: "£8",
+        per: "/ day",
+        note: "A low-commitment option when you only need the gym for one visit.",
+        summary: "You selected the Single day pass. It gives you full gym access plus locker and shower use for one visit.",
+        features: [
+          "Full gym access",
+          "Locker and shower",
+          "No recurring membership",
+          "Fast check-in at reception"
+        ]
+      },
+      "day-class": {
+        tag: "Popular pick",
+        name: "Day + class",
+        desc: "A day pass with one instructor-led class included in the same visit.",
+        price: "£12",
+        per: "/ day",
+        note: "Ideal if you want flexible access plus the energy of a coached session.",
+        summary: "You selected the Day + class pass. It adds one group class to your one-day gym access and facilities.",
+        features: [
+          "Full gym access",
+          "Locker and shower",
+          "One group class included",
+          "No recurring membership"
+        ]
+      }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const selectedPlan = params.get("plan");
+    const plan = dayPassPlans[selectedPlan] || dayPassPlans["single-day"];
+
+    document.getElementById("pass-tag").textContent = plan.tag;
+    document.getElementById("plan-name").textContent = plan.name;
+    document.getElementById("plan-desc").textContent = plan.desc;
+    document.getElementById("plan-price").innerHTML = `${plan.price} <span>${plan.per}</span>`;
+    document.getElementById("plan-note").textContent = plan.note;
+    document.getElementById("summary-copy").textContent = plan.summary;
+    document.getElementById("feature-list").innerHTML = plan.features.map((feature) => `<li>${feature}</li>`).join("");
+    document.getElementById("checkout-link").href = `checkout.html?plan=${encodeURIComponent(selectedPlan || "single-day")}`;
+  </script>
+</body>
+</html>
