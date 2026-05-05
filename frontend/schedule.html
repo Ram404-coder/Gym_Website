@@ -3,188 +3,417 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AuraAthletic - Class Schedule</title>
+    <title>AuraAthletic – Elite Schedule</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,600;14..32,800&family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="schedule.css">
+    <script src="auth.js"></script>
+    <style>
+        .schedule-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            margin-top: 80px;
+        }
+        
+        .schedule-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .schedule-hero h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #fff, var(--gold));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        
+        .gold-tag {
+            color: var(--gold);
+            letter-spacing: 4px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+        
+        .filters-wrapper {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        
+        .search-glass input, .filter-glass select {
+            background: rgba(20, 22, 28, 0.9);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            padding: 0.75rem 1rem;
+            border-radius: 40px;
+            color: white;
+            font-size: 0.9rem;
+            min-width: 200px;
+        }
+        
+        .search-glass input:focus, .filter-glass select:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+        
+        .premium-schedule {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(20, 22, 28, 0.6);
+            border-radius: 24px;
+            overflow: hidden;
+        }
+        
+        .premium-schedule th {
+            text-align: left;
+            padding: 1rem;
+            background: rgba(10, 11, 16, 0.9);
+            color: var(--gold);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        
+        .premium-schedule td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #e0e0e0;
+        }
+        
+        .premium-schedule tr:hover td {
+            background: rgba(212, 175, 55, 0.05);
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-available {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .status-full {
+            background: rgba(233, 69, 96, 0.15);
+            color: var(--crimson);
+            border: 1px solid rgba(233, 69, 96, 0.3);
+        }
+        
+        .btn-book-glass {
+            background: linear-gradient(135deg, var(--crimson), #b6304b);
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 40px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-book-glass:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(233, 69, 96, 0.4);
+        }
+        
+        .btn-book-glass:disabled {
+            background: #2a2a2a;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: rgba(20, 22, 28, 0.95);
+            border-radius: 24px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            border: 1px solid var(--gold);
+        }
+        
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        
+        .btn-confirm {
+            background: var(--gold);
+            color: #0a0b10;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+        
+        .loading-cell {
+            text-align: center;
+            padding: 3rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        @media (max-width: 768px) {
+            .schedule-container {
+                padding: 1rem;
+                margin-top: 70px;
+            }
+            .premium-schedule th, .premium-schedule td {
+                padding: 0.5rem;
+                font-size: 0.8rem;
+            }
+            .filters-wrapper {
+                flex-direction: column;
+            }
+            .search-glass input, .filter-glass select {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="/" class="logo">AuraAthletic</a>
-            
+            <a href="/" class="logo">AURA ATHLETIC</a>
             <ul class="nav-links">
                 <li><a href="/">Home</a></li>
                 <li><a href="/schedule.html" class="active">Schedule</a></li>
                 <li><a href="/trainers.html">Trainers</a></li>
                 <li><a href="/admin.html">Admin</a></li>
             </ul>
-            
-            <button class="menu-btn" onclick="toggleMenu()">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
+            <div class="nav-actions"></div>
+            <button class="menu-btn" onclick="toggleMenu()">☰</button>
         </div>
     </nav>
 
-    <!-- Mobile Menu -->
-    <div id="mobileMenu" class="mobile-menu">
-        <a href="/">Home</a>
-        <a href="/schedule.html">Schedule</a>
-        <a href="/trainers.html">Trainers</a>
-        <a href="/admin.html">Admin</a>
+    <div class="schedule-container">
+        <div class="schedule-hero">
+            <div class="gold-tag">CLASS CALENDAR</div>
+            <h1>Class Schedule</h1>
+            <p>Reserve your place among the driven</p>
+        </div>
+
+        <div class="filters-wrapper">
+            <div class="search-glass">
+                <input type="text" id="searchInput" placeholder="Search class or instructor..." onkeyup="filterTable()">
+            </div>
+            <div class="filter-glass">
+                <select id="dayFilter" onchange="filterTable()">
+                    <option value="all">All Days</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
+            </div>
+        </div>
+
+        <table class="premium-schedule">
+            <thead>
+                <tr>
+                    <th>Class</th>
+                    <th>Instructor</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Location</th>
+                    <th>Spots Left</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="scheduleBody">
+                <td><td colspan="7" class="loading-cell">Loading elite sessions...</td></tr>
+            </tbody>
+        </table>
     </div>
 
-    <!-- Main Content -->
-    <div class="container">
-        <div class="section-header">
-            <h2>Class Schedule</h2>
-            <p>Browse all available classes and book your spot</p>
-        </div>
-        
-        <!-- Filters -->
-        <div class="schedule-filters">
-            <input type="text" id="searchInput" class="search-box" placeholder="Search by class name or instructor..." onkeyup="filterClasses()">
-            <select id="dayFilter" class="filter-select" onchange="filterClasses()">
-                <option value="all">All Days</option>
-                <option value="Monday">Monday</option>
-                <option value="Tuesday">Tuesday</option>
-                <option value="Wednesday">Wednesday</option>
-                <option value="Thursday">Thursday</option>
-                <option value="Friday">Friday</option>
-                <option value="Saturday">Saturday</option>
-                <option value="Sunday">Sunday</option>
-            </select>
-            <select id="difficultyFilter" class="filter-select" onchange="filterClasses()">
-                <option value="all">All Levels</option>
-                <option value="beginner">Beginner</option>
-                <option value="intermediate">Intermediate</option>
-                <option value="advanced">Advanced</option>
-            </select>
-        </div>
-        
-        <!-- Schedule Table -->
-        <div style="overflow-x: auto;">
-            <table class="schedule-table" id="scheduleTable">
-                <thead>
-                    <tr>
-                        <th>Class</th>
-                        <th>Instructor</th>
-                        <th>Date</th>
-                        <th>Time</th>
-                        <th>Location</th>
-                        <th>Spots Left</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="scheduleBody">
-                    <tr><td colspan="7" style="text-align: center;">Loading classes...</td></tr>
-                </tbody>
-             </table>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h3>Elite Access Required</h3>
+            <p>Please log in to book classes</p>
+            <div class="modal-actions">
+                <button class="btn-confirm" onclick="redirectToLogin()">Login Now</button>
+                <button class="btn-cancel" onclick="closeLoginModal()">Cancel</button>
+            </div>
         </div>
     </div>
 
     <!-- Booking Modal -->
     <div id="bookingModal" class="modal">
         <div class="modal-content">
-            <h3>Confirm Booking</h3>
+            <h3>Secure your spot</h3>
             <p id="modalClassInfo"></p>
             <div class="modal-actions">
-                <button class="btn-confirm" onclick="confirmBooking()">Confirm</button>
-                <button class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button class="btn-confirm" onclick="confirmBooking()">Confirm Booking</button>
+                <button class="btn-cancel" onclick="closeBookingModal()">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="footer">
-        <p>&copy; 2025 AuraAthletic. All rights reserved.</p>
+        <p>© 2025 AURA ATHLETIC — Train with intensity · Rise with aura</p>
     </footer>
 
     <script>
+        // No API_BASE declaration here - using the one from auth.js
+        
         let allClasses = [];
         let selectedClass = null;
-        
+
         function toggleMenu() {
-            document.getElementById('mobileMenu').classList.toggle('show');
+            const navLinks = document.querySelector('.nav-links');
+            if (navLinks) navLinks.classList.toggle('show');
         }
-        
-        async function loadClasses() {
-            try {
-                const response = await fetch('/api/classes');
-                allClasses = await response.json();
-                renderTable(allClasses);
-            } catch (error) {
-                console.error('Error loading classes:', error);
-                document.getElementById('scheduleBody').innerHTML = '<tr><td colspan="7" style="text-align: center;">Failed to load classes. Make sure server is running.</td></tr>';
-            }
+
+        function formatTime(time) {
+            if (!time) return 'N/A';
+            const [hours, minutes] = time.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            return `${hour12}:${minutes} ${ampm}`;
         }
-        
+
+        function formatDate(dateStr) {
+            if (!dateStr) return 'N/A';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        }
+
         function renderTable(classes) {
             const tbody = document.getElementById('scheduleBody');
             
-            if (classes.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No classes found.</td></tr>';
+            if (!classes || classes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="loading-cell">No classes available</td></tr>';
                 return;
             }
             
-            tbody.innerHTML = classes.map(classItem => {
-                const spotsLeft = classItem.maxCapacity - classItem.booked;
-                const isFull = spotsLeft === 0;
+            let html = '';
+            for (let i = 0; i < classes.length; i++) {
+                const c = classes[i];
+                const spotsLeft = (c.maxCapacity || 0) - (c.booked || 0);
+                const isFull = spotsLeft <= 0;
                 const statusClass = isFull ? 'status-full' : 'status-available';
-                const statusText = isFull ? 'Full' : `${spotsLeft} left`;
+                const statusText = isFull ? 'Full' : spotsLeft + ' left';
                 
-                return `
+                // Escape function
+                const escape = (str) => {
+                    if (!str) return '';
+                    return str.replace(/[&<>]/g, function(m) {
+                        if (m === '&') return '&amp;';
+                        if (m === '<') return '&lt;';
+                        if (m === '>') return '&gt;';
+                        return m;
+                    });
+                };
+                
+                html += `
                     <tr>
-                        <td><strong>${classItem.name}</strong></td>
-                        <td>${classItem.instructor}</td>
-                        <td>${formatDate(classItem.date)}</td>
-                        <td>${formatTime(classItem.time)}</td>
-                        <td>${classItem.location}</td>
+                        <td><strong>${escape(c.name)}</strong></td>
+                        <td>${escape(c.instructor)}</td>
+                        <td>${formatDate(c.date)}</td>
+                        <td>${formatTime(c.time)}</td>
+                        <td>${escape(c.location)}</td>
                         <td><span class="status-badge ${statusClass}">${statusText}</span></td>
                         <td>
-                            ${!isFull ? 
-                                `<button class="btn-book-small" onclick="openBookingModal('${classItem._id}')">Book Now</button>` : 
-                                `<button class="btn-book-small" disabled>Full</button>`
-                            }
+                            ${!isFull ? `<button class="btn-book-glass" onclick="openBookingModal('${c._id}')">Book Now</button>` : '<button class="btn-book-glass" disabled>Full</button>'}
                         </td>
                     </tr>
                 `;
-            }).join('');
+            }
+            tbody.innerHTML = html;
         }
-        
-        function filterClasses() {
+
+        async function fetchClasses() {
+            try {
+                const response = await fetch('/api/classes');
+                if (!response.ok) throw new Error('Network response was not ok');
+                allClasses = await response.json();
+                console.log('Classes loaded:', allClasses.length);
+                renderTable(allClasses);
+            } catch (error) {
+                console.error('Error fetching classes:', error);
+                document.getElementById('scheduleBody').innerHTML = '<tr><td colspan="7" class="loading-cell">Failed to load classes. Make sure backend is running.</td></tr>';
+            }
+        }
+
+        function filterTable() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const dayFilter = document.getElementById('dayFilter').value;
-            const difficultyFilter = document.getElementById('difficultyFilter').value;
             
-            const filtered = allClasses.filter(classItem => {
-                const matchesSearch = classItem.name.toLowerCase().includes(searchTerm) || 
-                                     classItem.instructor.toLowerCase().includes(searchTerm);
-                const matchesDay = dayFilter === 'all' || classItem.date.includes(dayFilter);
-                const matchesDifficulty = difficultyFilter === 'all' || classItem.difficulty === difficultyFilter;
-                
-                return matchesSearch && matchesDay && matchesDifficulty;
+            const filtered = allClasses.filter(c => {
+                const matchesSearch = (c.name || '').toLowerCase().includes(searchTerm) || (c.instructor || '').toLowerCase().includes(searchTerm);
+                let matchesDay = true;
+                if (dayFilter !== 'all') {
+                    const classDate = new Date(c.date);
+                    const dayName = classDate.toLocaleDateString('en-US', { weekday: 'long' });
+                    matchesDay = dayName === dayFilter;
+                }
+                return matchesSearch && matchesDay;
             });
-            
             renderTable(filtered);
         }
-        
+
         function openBookingModal(classId) {
+            const user = getCurrentUser();
+            if (!user) {
+                document.getElementById('loginModal').classList.add('show');
+                return;
+            }
             selectedClass = allClasses.find(c => c._id === classId);
             if (selectedClass) {
+                const spotsLeft = (selectedClass.maxCapacity || 0) - (selectedClass.booked || 0);
                 document.getElementById('modalClassInfo').innerHTML = `
-                    <strong>${selectedClass.name}</strong><br>
-                    ${formatTime(selectedClass.time)} with ${selectedClass.instructor}<br>
-                    <span style="color: var(--success);">${selectedClass.maxCapacity - selectedClass.booked} spots available</span>
+                    <strong>${escapeHtml(selectedClass.name)}</strong><br>
+                    ${formatTime(selectedClass.time)} with ${escapeHtml(selectedClass.instructor)}<br>
+                    <span style="color: var(--gold);">${spotsLeft} spots available</span>
                 `;
                 document.getElementById('bookingModal').classList.add('show');
             }
         }
-        
+
         async function confirmBooking() {
             if (!selectedClass) return;
+            const user = getCurrentUser();
             
             try {
                 const response = await fetch('/api/bookings', {
@@ -192,54 +421,59 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         classId: selectedClass._id,
-                        userName: 'Guest User'
+                        userName: user ? user.name : 'Guest'
                     })
                 });
                 
                 if (response.ok) {
-                    showNotification(`Successfully booked ${selectedClass.name}!`, 'success');
-                    await loadClasses();
-                    closeModal();
+                    alert(`✓ Booked: ${selectedClass.name}`);
+                    await fetchClasses();
+                    closeBookingModal();
                 } else {
                     const error = await response.json();
-                    showNotification(error.error || 'Booking failed', 'error');
+                    alert('Error: ' + (error.error || 'Booking failed'));
                 }
             } catch (error) {
-                showNotification('Error making booking', 'error');
+                console.error('Booking error:', error);
+                alert('Network error. Make sure backend is running.');
             }
         }
+
+        function redirectToLogin() {
+            window.location.href = '/login.html';
+        }
         
-        function closeModal() {
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('show');
+        }
+        
+        function closeBookingModal() {
             document.getElementById('bookingModal').classList.remove('show');
             selectedClass = null;
         }
         
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = 'notification';
-            notification.style.background = type === 'success' ? '#10b981' : '#ef4444';
-            notification.textContent = message;
-            document.body.appendChild(notification);
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchClasses();
             
-            setTimeout(() => {
-                notification.style.animation = 'slideOut 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        }
-        
-        function formatTime(time) {
-            const [hours, minutes] = time.split(':');
-            const hour = parseInt(hours);
-            const ampm = hour >= 12 ? 'PM' : 'AM';
-            const hour12 = hour % 12 || 12;
-            return `${hour12}:${minutes} ${ampm}`;
-        }
-        
-        function formatDate(date) {
-            return new Date(date).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-        }
-        
-        loadClasses();
+            // Close modals when clicking outside
+            window.onclick = (e) => {
+                if (e.target.classList && e.target.classList.contains('modal')) {
+                    closeLoginModal();
+                    closeBookingModal();
+                }
+            };
+        });
     </script>
 </body>
 </html>

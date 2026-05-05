@@ -1,25 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AuraAthletic - Our Trainers</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="trainers.css">
+    <script src="auth.js"></script>
+    <style>
+        /* Additional styles for dynamic loading */
+        .trainer-card {
+            cursor: pointer;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--gold);
+        }
+    </style>
 </head>
+
 <body>
     <!-- Navigation Bar -->
     <nav class="navbar">
         <div class="nav-container">
             <a href="/" class="logo">AuraAthletic</a>
-            
             <ul class="nav-links">
                 <li><a href="/">Home</a></li>
                 <li><a href="/schedule.html">Schedule</a></li>
                 <li><a href="/trainers.html" class="active">Trainers</a></li>
                 <li><a href="/admin.html">Admin</a></li>
             </ul>
-            
             <button class="menu-btn" onclick="toggleMenu()">
                 <span></span>
                 <span></span>
@@ -37,7 +50,13 @@
     </div>
 
     <!-- Hero Section -->
-    <section class="hero" style="background: linear-gradient(135deg, var(--secondary) 0%, var(--accent) 100%);">
+    <section class="hero">
+        <!-- Video Background -->
+        <video class="hero-video" autoplay loop muted playsinline poster="images/hero-gym.jpg">
+            <source src="images/hero-video.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+    
         <div class="hero-content">
             <h1>Meet Our Expert Trainers</h1>
             <p>World-class professionals dedicated to your fitness journey</p>
@@ -50,9 +69,9 @@
             <h2>Our Trainers</h2>
             <p>Certified experts in various fitness disciplines</p>
         </div>
-        
+
         <div id="trainersGrid" class="trainers-grid">
-            <div style="text-align: center; grid-column: span 3;">Loading trainers...</div>
+            <div class="loading">Loading trainers...</div>
         </div>
     </div>
 
@@ -70,10 +89,12 @@
     </footer>
 
     <script>
-        // Sample trainers data (matches your classes instructors)
-        const trainers = [
+        // ========================================
+        // STATIC SAMPLE TRAINERS (kept as fallback)
+        // ========================================
+        const staticTrainers = [
             {
-                id: 1,
+                id: "static_1",
                 name: "Sarah Johnson",
                 title: "Senior Yoga Instructor",
                 image: "images/yoga.png",
@@ -91,7 +112,7 @@
                 availability: ["Monday", "Wednesday", "Friday"]
             },
             {
-                id: 2,
+                id: "static_2",
                 name: "Mike Chen",
                 title: "HIIT & Strength Coach",
                 image: "images/HIIT.png",
@@ -109,7 +130,7 @@
                 availability: ["Monday", "Wednesday", "Friday"]
             },
             {
-                id: 3,
+                id: "static_3",
                 name: "Emma Davis",
                 title: "Spin & Cycling Specialist",
                 image: "images/luxury-gym.jpg",
@@ -127,7 +148,7 @@
                 availability: ["Tuesday", "Thursday", "Saturday"]
             },
             {
-                id: 4,
+                id: "static_4",
                 name: "Alex Rodriguez",
                 title: "Strength & Conditioning Expert",
                 image: "images/bb.png",
@@ -145,7 +166,7 @@
                 availability: ["Monday", "Wednesday", "Friday"]
             },
             {
-                id: 5,
+                id: "static_5",
                 name: "Maria Garcia",
                 title: "Dance Fitness Instructor",
                 image: "images/zumba.png",
@@ -163,7 +184,7 @@
                 availability: ["Tuesday", "Thursday", "Saturday"]
             },
             {
-                id: 6,
+                id: "static_6",
                 name: "Lisa Thompson",
                 title: "Pilates & Core Specialist",
                 image: "images/powerspin.png",
@@ -182,30 +203,86 @@
             }
         ];
 
+        // Global variable to store all trainers (static + dynamic)
+        let allTrainers = [];
+
+        // Helper functions
         function toggleMenu() {
             document.getElementById('mobileMenu').classList.toggle('show');
         }
 
-        function renderTrainers() {
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Fetch dynamic trainers from backend
+        async function fetchDynamicTrainers() {
+            try {
+                const response = await fetch('/api/trainers');
+                if (!response.ok) throw new Error('Network error');
+                const dynamicTrainers = await response.json();
+                // Map backend fields to match the static trainer structure
+                return dynamicTrainers.map(t => ({
+                    id: t._id,
+                    name: t.name,
+                    title: t.specialty || 'Fitness Trainer',
+                    image: t.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=d4af37&color=fff&size=200`,
+                    specialties: t.specialties || [t.specialty || 'Fitness'],
+                    bio: t.bio || 'Passionate about fitness.',
+                    experience: t.experience || '0+ years',
+                    classes: t.assignedClasses?.length || 0,
+                    students: 0, // placeholder
+                    rating: 4.8,
+                    schedule: [], // optional
+                    availability: []
+                }));
+            } catch (error) {
+                console.error('Error fetching dynamic trainers:', error);
+                return [];
+            }
+        }
+
+        // Merge static and dynamic trainers (avoid duplicates by name/email)
+        async function loadAllTrainers() {
+            const dynamic = await fetchDynamicTrainers();
+            // Create a Set of existing trainer names from static trainers
+            const staticNames = new Set(staticTrainers.map(t => t.name.toLowerCase()));
+            // Add only dynamic trainers whose name is not already in static
+            const newDynamic = dynamic.filter(d => !staticNames.has(d.name.toLowerCase()));
+            allTrainers = [...staticTrainers, ...newDynamic];
+            renderTrainers(allTrainers);
+        }
+
+        function renderTrainers(trainers) {
             const grid = document.getElementById('trainersGrid');
-            
+            if (!trainers.length) {
+                grid.innerHTML = '<div class="loading">No trainers available.</div>';
+                return;
+            }
+
             const trainersHTML = trainers.map(trainer => `
-                <div class="trainer-card" onclick="showTrainerDetail(${trainer.id})">
+                <div class="trainer-card" onclick="showTrainerDetail('${trainer.id}')">
                     <div class="trainer-image">
                         <img src="${trainer.image}" alt="${trainer.name}" onerror="this.src='images/modern-gym.jpg'">
                         <span class="trainer-badge">${trainer.experience}</span>
                     </div>
                     <div class="trainer-info">
-                        <h3 class="trainer-name">${trainer.name}</h3>
-                        <div class="trainer-title">${trainer.title}</div>
+                        <h3 class="trainer-name">${escapeHtml(trainer.name)}</h3>
+                        <div class="trainer-title">${escapeHtml(trainer.title)}</div>
                         <div class="rating">
                             ${'★'.repeat(Math.floor(trainer.rating))}${trainer.rating % 1 ? '½' : ''}
                             <span style="color: var(--gray);">(${trainer.rating})</span>
                         </div>
                         <div class="trainer-specialty">
-                            ${trainer.specialties.map(s => `<span class="specialty-tag">${s}</span>`).join('')}
+                            ${trainer.specialties.map(s => `<span class="specialty-tag">${escapeHtml(s)}</span>`).join('')}
                         </div>
-                        <p class="trainer-bio">${trainer.bio.substring(0, 100)}...</p>
+                        <p class="trainer-bio">${escapeHtml(trainer.bio.substring(0, 100))}...</p>
                         <div class="trainer-stats">
                             <div class="stat">
                                 <span class="stat-value">${trainer.classes}</span>
@@ -216,32 +293,31 @@
                                 <span class="stat-label">Students</span>
                             </div>
                         </div>
-                        <button class="btn-book-trainer" onclick="event.stopPropagation(); showBookingForm(${trainer.id})">
+                        <button class="btn-book-trainer" onclick="event.stopPropagation(); showBookingForm('${trainer.id}')">
                             Book Personal Session
                         </button>
                     </div>
                 </div>
             `).join('');
-            
             grid.innerHTML = trainersHTML;
         }
 
         function showTrainerDetail(trainerId) {
-            const trainer = trainers.find(t => t.id === trainerId);
+            const trainer = allTrainers.find(t => t.id == trainerId);
             if (!trainer) return;
-            
+
             const modal = document.getElementById('trainerModal');
             const content = document.getElementById('trainerDetailContent');
-            
+
             content.innerHTML = `
                 <div style="padding: 2rem;">
                     <div style="display: flex; gap: 2rem; flex-wrap: wrap;">
                         <img src="${trainer.image}" alt="${trainer.name}" style="width: 200px; height: 200px; object-fit: cover; border-radius: var(--radius);">
                         <div style="flex: 1;">
-                            <h2 style="color: var(--secondary);">${trainer.name}</h2>
-                            <p style="color: var(--primary); font-weight: 600;">${trainer.title}</p>
+                            <h2 style="color: var(--secondary);">${escapeHtml(trainer.name)}</h2>
+                            <p style="color: var(--primary); font-weight: 600;">${escapeHtml(trainer.title)}</p>
                             <div class="rating">${'★'.repeat(Math.floor(trainer.rating))} (${trainer.rating})</div>
-                            <p><strong>Experience:</strong> ${trainer.experience}</p>
+                            <p><strong>Experience:</strong> ${escapeHtml(trainer.experience)}</p>
                             <p><strong>Total Classes:</strong> ${trainer.classes}</p>
                             <p><strong>Happy Students:</strong> ${trainer.students}</p>
                         </div>
@@ -249,61 +325,56 @@
                     
                     <div style="margin-top: 2rem;">
                         <h3>About ${trainer.name.split(' ')[0]}</h3>
-                        <p style="color: var(--gray);">${trainer.bio}</p>
+                        <p style="color: var(--gray);">${escapeHtml(trainer.bio)}</p>
                     </div>
                     
                     <div style="margin-top: 2rem;">
                         <h3>Specialties</h3>
                         <div class="trainer-specialty">
-                            ${trainer.specialties.map(s => `<span class="specialty-tag">${s}</span>`).join('')}
+                            ${trainer.specialties.map(s => `<span class="specialty-tag">${escapeHtml(s)}</span>`).join('')}
                         </div>
                     </div>
                     
                     <div style="margin-top: 2rem;">
                         <h3>Weekly Schedule</h3>
                         <div class="schedule-grid">
-                            ${trainer.schedule.map(s => `
+                            ${trainer.schedule && trainer.schedule.length ? trainer.schedule.map(s => `
                                 <div class="schedule-item">
                                     <strong>${s.day}</strong>
                                     <span>${s.time}</span>
                                     <span class="time-slot">${s.type}</span>
                                 </div>
-                            `).join('')}
+                            `).join('') : '<p>No schedule available</p>'}
                         </div>
                     </div>
                 </div>
             `;
-            
             modal.style.display = 'flex';
         }
 
         function showBookingForm(trainerId) {
-            const trainer = trainers.find(t => t.id === trainerId);
+            const trainer = allTrainers.find(t => t.id == trainerId);
             if (!trainer) return;
-            
+
             const modal = document.getElementById('trainerModal');
             const content = document.getElementById('trainerDetailContent');
-            
+
             content.innerHTML = `
                 <div style="padding: 2rem;">
-                    <h2 style="color: var(--secondary); margin-bottom: 1rem;">Book Personal Training with ${trainer.name}</h2>
-                    
-                    <form id="bookingForm" onsubmit="submitBooking(event, ${trainer.id})">
+                    <h2 style="color: var(--secondary); margin-bottom: 1rem;">Book Personal Training with ${escapeHtml(trainer.name)}</h2>
+                    <form id="bookingForm" onsubmit="submitBooking(event, '${trainer.id}')">
                         <div class="form-group">
                             <label>Your Name *</label>
                             <input type="text" id="clientName" required placeholder="Enter your full name">
                         </div>
-                        
                         <div class="form-group">
                             <label>Your Email *</label>
                             <input type="email" id="clientEmail" required placeholder="Enter your email">
                         </div>
-                        
                         <div class="form-group">
                             <label>Phone Number</label>
                             <input type="tel" id="clientPhone" placeholder="Enter your phone number">
                         </div>
-                        
                         <div class="form-group">
                             <label>Select Session Type *</label>
                             <select id="sessionType" required>
@@ -313,7 +384,6 @@
                                 <option value="90-min">90-Min Intensive - $110</option>
                             </select>
                         </div>
-                        
                         <div class="form-group">
                             <label>Preferred Day *</label>
                             <select id="preferredDay" required>
@@ -321,34 +391,29 @@
                                 ${trainer.availability.map(day => `<option value="${day}">${day}</option>`).join('')}
                             </select>
                         </div>
-                        
                         <div class="form-group">
                             <label>Preferred Time</label>
                             <input type="time" id="preferredTime">
                         </div>
-                        
                         <div class="form-group">
                             <label>Special Requests</label>
                             <textarea id="specialRequests" rows="3" placeholder="Any specific goals or concerns?"></textarea>
                         </div>
-                        
                         <div style="display: flex; gap: 1rem;">
                             <button type="submit" class="btn-book-trainer" style="flex: 1;">Request Booking</button>
-                            <button type="button" class="btn-book-trainer" onclick="showTrainerDetail(${trainer.id})" style="background: var(--gray);">Back</button>
+                            <button type="button" class="btn-book-trainer" onclick="showTrainerDetail('${trainer.id}')" style="background: var(--gray);">Back</button>
                         </div>
                     </form>
                 </div>
             `;
-            
             modal.style.display = 'flex';
         }
 
         function submitBooking(event, trainerId) {
             event.preventDefault();
-            const trainer = trainers.find(t => t.id === trainerId);
+            const trainer = allTrainers.find(t => t.id == trainerId);
             const name = document.getElementById('clientName').value;
             const email = document.getElementById('clientEmail').value;
-            
             alert(`✓ Booking request sent to ${trainer.name}!\n\nWe'll contact you at ${email} within 24 hours to confirm your session.`);
             closeTrainerModal();
         }
@@ -357,16 +422,14 @@
             document.getElementById('trainerModal').style.display = 'none';
         }
 
-        // Close modal when clicking outside
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             const modal = document.getElementById('trainerModal');
-            if (event.target === modal) {
-                closeTrainerModal();
-            }
+            if (event.target === modal) closeTrainerModal();
         }
 
-        // Initialize page
-        renderTrainers();
+        // Initialize page: load static + dynamic trainers
+        loadAllTrainers();
     </script>
 </body>
+
 </html>

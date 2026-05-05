@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraAthletic – Login / Register</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #0a0b10;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        .auth-card {
+            background: rgba(20, 22, 28, 0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 500px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 25px 45px rgba(0,0,0,0.5);
+        }
+        .logo {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #d4af37);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .gold-tag {
+            text-align: center;
+            color: #d4af37;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            margin-bottom: 2rem;
+        }
+        .tab-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid rgba(212,175,55,0.2);
+        }
+        .tab {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .tab.active {
+            color: #d4af37;
+            border-bottom: 2px solid #d4af37;
+        }
+        .form-panel {
+            display: none;
+        }
+        .form-panel.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(212,175,55,0.3);
+            border-radius: 50px;
+            color: white;
+            font-size: 1rem;
+        }
+        .form-group textarea {
+            border-radius: 20px;
+            resize: vertical;
+        }
+        .trainer-fields {
+            display: none;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(212,175,55,0.2);
+        }
+        .trainer-fields.show {
+            display: block;
+        }
+        button[type="submit"] {
+            background: linear-gradient(135deg, #e94560, #b6304b);
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 0.5rem;
+        }
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(233,69,96,0.4);
+        }
+        .msg {
+            margin-top: 1rem;
+            padding: 0.6rem;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        .error-msg {
+            background: rgba(233,69,96,0.1);
+            color: #e94560;
+        }
+        .success-msg {
+            background: rgba(16,185,129,0.1);
+            color: #10b981;
+        }
+        .note {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #888;
+            margin-top: 1.5rem;
+        }
+        @media (max-width: 500px) {
+            .auth-card { padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <div class="logo">AURA ATHLETIC</div>
+        <div class="gold-tag">ELITE ACCESS PORTAL</div>
+
+        <div class="tab-bar">
+            <button class="tab active" data-tab="login">Login</button>
+            <button class="tab" data-tab="register">Register</button>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginPanel" class="form-panel active">
+            <form id="loginForm">
+                <div class="form-group">
+                    <input type="email" id="loginEmail" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="loginPassword" placeholder="Password" required>
+                </div>
+                <button type="submit">Login</button>
+                <div id="loginMsg" class="msg"></div>
+            </form>
+        </div>
+
+        <!-- Register Form -->
+        <div id="registerPanel" class="form-panel">
+            <form id="registerForm">
+                <div class="form-group">
+                    <input type="text" id="regName" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" id="regEmail" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" id="regPassword" placeholder="Password (min 6 characters)" required>
+                </div>
+                <div class="form-group">
+                    <select id="regRole" required>
+                        <option value="">Select Role</option>
+                        <option value="member">Member</option>
+                        <option value="trainer">Trainer</option>
+                        
+                    </select>
+                </div>
+
+                <!-- Trainer-specific fields (hidden initially) -->
+                <div id="trainerFields" class="trainer-fields">
+                    <div class="form-group">
+                        <input type="text" id="regSpecialty" placeholder="Specialty (e.g., Yoga, HIIT)">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="regExperience" placeholder="Experience (e.g., 5+ years)">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="regCertifications" placeholder="Certifications">
+                    </div>
+                    <div class="form-group">
+                        <textarea id="regBio" rows="2" placeholder="Short bio..."></textarea>
+                    </div>
+                </div>
+
+                <button type="submit">Create Account</button>
+                <div id="registerMsg" class="msg"></div>
+            </form>
+        </div>
+        <div class="note">
+            🔐 Trainers: After registration, a default class will be created for you.
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+
+        // Tab switching
+        const tabs = document.querySelectorAll('.tab');
+        const loginPanel = document.getElementById('loginPanel');
+        const registerPanel = document.getElementById('registerPanel');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.getAttribute('data-tab');
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                if (target === 'login') {
+                    loginPanel.classList.add('active');
+                    registerPanel.classList.remove('active');
+                } else {
+                    loginPanel.classList.remove('active');
+                    registerPanel.classList.add('active');
+                }
+                // Clear messages
+                document.getElementById('loginMsg').innerHTML = '';
+                document.getElementById('registerMsg').innerHTML = '';
+            });
+        });
+
+        // Show/hide trainer fields based on role selection
+        const roleSelect = document.getElementById('regRole');
+        const trainerFieldsDiv = document.getElementById('trainerFields');
+        roleSelect.addEventListener('change', () => {
+            if (roleSelect.value === 'trainer') {
+                trainerFieldsDiv.classList.add('show');
+            } else {
+                trainerFieldsDiv.classList.remove('show');
+            }
+        });
+
+        // Login handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const msgDiv = document.getElementById('loginMsg');
+
+            msgDiv.innerHTML = 'Logging in...';
+            try {
+                const res = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Login failed');
+                // Store user in localStorage
+                localStorage.setItem('auraUser', JSON.stringify(data.user));
+                msgDiv.innerHTML = '✅ Login successful! Redirecting...';
+                // Redirect based on role
+                if (data.user.role === 'trainer') {
+                    window.location.href = '/trainer-dashboard.html';
+                } else {
+                    window.location.href = '/index.html';
+                }
+            } catch (err) {
+                msgDiv.innerHTML = '❌ ' + err.message;
+                msgDiv.classList.add('error-msg');
+            }
+        });
+
+        // Registration handler
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const role = document.getElementById('regRole').value;
+            const msgDiv = document.getElementById('registerMsg');
+
+            // Basic validation
+            if (!name || !email || !password || !role) {
+                msgDiv.innerHTML = '❌ All fields are required.';
+                return;
+            }
+            if (password.length < 6) {
+                msgDiv.innerHTML = '❌ Password must be at least 6 characters.';
+                return;
+            }
+
+            const payload = { name, email, password, role };
+            if (role === 'trainer') {
+                payload.specialty = document.getElementById('regSpecialty').value || 'Fitness Trainer';
+                payload.experience = document.getElementById('regExperience').value || '0+ years';
+                payload.certifications = document.getElementById('regCertifications').value || 'Certified Trainer';
+                payload.bio = document.getElementById('regBio').value || 'Passionate about fitness.';
+            }
+
+            msgDiv.innerHTML = 'Creating account...';
+            try {
+                const res = await fetch(`${API_BASE}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Registration failed');
+                msgDiv.innerHTML = '✅ Registration successful! Please login.';
+                // Switch to login tab after 1.5 seconds
+                setTimeout(() => {
+                    // Clear form
+                    document.getElementById('regName').value = '';
+                    document.getElementById('regEmail').value = '';
+                    document.getElementById('regPassword').value = '';
+                    document.getElementById('regRole').value = '';
+                    trainerFieldsDiv.classList.remove('show');
+                    // Switch tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabs[0].classList.add('active');
+                    loginPanel.classList.add('active');
+                    registerPanel.classList.remove('active');
+                    msgDiv.innerHTML = '';
+                }, 1500);
+            } catch (err) {
+                msgDiv.innerHTML = '❌ ' + err.message;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraAthletic – Trainer Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,600;14..32,800&family=Montserrat:wght@400;600;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="auth.js"></script>
+    <style>
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            margin-top: 80px;
+        }
+
+        .dashboard-header {
+            background: rgba(20, 22, 28, 0.6);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .welcome-badge {
+            display: inline-block;
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--gold);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+        }
+
+        .profile-section {
+            background: rgba(20, 22, 28, 0.6);
+            border-radius: 24px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .profile-header {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .profile-photo-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--gold);
+        }
+
+        .profile-info {
+            flex: 1;
+        }
+
+        .info-row {
+            margin-bottom: 0.5rem;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: var(--gold);
+            display: inline-block;
+            width: 120px;
+        }
+
+        .edit-form {
+            display: none;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .edit-form.show {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.3rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 12px;
+            color: white;
+        }
+
+        .btn-primary {
+            background: var(--crimson);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-right: 0.5rem;
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(20, 22, 28, 0.6);
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--crimson);
+        }
+
+        .classes-table {
+            background: rgba(20, 22, 28, 0.6);
+            border-radius: 24px;
+            overflow: hidden;
+        }
+
+        .classes-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .classes-table th,
+        .classes-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .classes-table th {
+            color: var(--gold);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+        }
+
+        .status-available {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .status-full {
+            background: rgba(233, 69, 96, 0.2);
+            color: var(--crimson);
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .info-label {
+                width: auto;
+                display: block;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">AURA ATHLETIC</a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/schedule.html">Schedule</a></li>
+                <li><a href="/trainers.html">Trainers</a></li>
+            </ul>
+            <div class="nav-actions"></div>
+        </div>
+    </nav>
+
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <span class="welcome-badge">👨‍🏫 TRAINER PORTAL</span>
+            <h1>My Trainer Profile</h1>
+            <p>Manage your profile and view assigned classes</p>
+        </div>
+
+        <!-- Profile Section -->
+        <div class="profile-section" id="profileSection">
+            <div class="profile-header">
+                <div>
+                    <img id="profilePreview" class="profile-photo-img" src="" alt="Profile">
+                    <div><input type="file" id="profileImageUpload" accept="image/*" style="margin-top: 0.5rem;"></div>
+                    <div id="uploadStatus" style="font-size:0.8rem; margin-top:0.3rem;"></div>
+                </div>
+                <div class="profile-info">
+                    <div class="info-row"><span class="info-label">Name:</span> <span id="displayName"></span></div>
+                    <div class="info-row"><span class="info-label">Specialty:</span> <span id="displaySpecialty"></span>
+                    </div>
+                    <div class="info-row"><span class="info-label">Experience:</span> <span
+                            id="displayExperience"></span></div>
+                    <div class="info-row"><span class="info-label">Certifications:</span> <span
+                            id="displayCertifications"></span></div>
+                    <div class="info-row"><span class="info-label">Bio:</span> <span id="displayBio"></span></div>
+                    <button class="btn-primary" onclick="showEditForm()">✏️ Edit Profile</button>
+                </div>
+            </div>
+
+            <!-- Edit Form -->
+            <div id="editForm" class="edit-form">
+                <h3 style="color: var(--gold);">Edit Profile</h3>
+                <div class="form-group">
+                    <label>Specialty</label>
+                    <input type="text" id="editSpecialty">
+                </div>
+                <div class="form-group">
+                    <label>Experience</label>
+                    <input type="text" id="editExperience">
+                </div>
+                <div class="form-group">
+                    <label>Certifications</label>
+                    <input type="text" id="editCertifications">
+                </div>
+                <div class="form-group">
+                    <label>Bio</label>
+                    <textarea id="editBio" rows="3"></textarea>
+                </div>
+                <button class="btn-primary" onclick="saveProfile()">Save Changes</button>
+                <button class="btn-secondary" onclick="hideEditForm()">Cancel</button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalClasses">0</div>
+                <div>Assigned Classes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalStudents">0</div>
+                <div>Total Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="upcomingClasses">0</div>
+                <div>Upcoming Classes</div>
+            </div>
+        </div>
+
+        <!-- Classes Table -->
+        <div class="classes-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Class Name</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Location</th>
+                        <th>Duration</th>
+                        <th>Booked/Capacity</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="classesTableBody">
+                    <tr>
+                        <td colspan="7">Loading your classes...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>© 2025 AURA ATHLETIC — Train with intensity · Rise with aura</p>
+    </footer>
+
+    <script>
+        // No API_BASE defined here (using from auth.js)
+        let currentTrainer = null;
+
+        function showEditForm() {
+            document.getElementById('editForm').classList.add('show');
+            document.getElementById('editSpecialty').value = currentTrainer?.specialty || '';
+            document.getElementById('editExperience').value = currentTrainer?.experience || '';
+            document.getElementById('editCertifications').value = currentTrainer?.certifications || '';
+            document.getElementById('editBio').value = currentTrainer?.bio || '';
+        }
+
+        function hideEditForm() {
+            document.getElementById('editForm').classList.remove('show');
+        }
+
+        async function saveProfile() {
+            const user = getCurrentUser();
+            if (!user) return;
+            const updateData = {
+                specialty: document.getElementById('editSpecialty').value,
+                experience: document.getElementById('editExperience').value,
+                certifications: document.getElementById('editCertifications').value,
+                bio: document.getElementById('editBio').value
+            };
+            try {
+                const response = await fetch(`/api/trainer/${user._id}/profile`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                });
+                if (response.ok) {
+                    alert('Profile updated!');
+                    await loadTrainerProfile();
+                    hideEditForm();
+                } else {
+                    alert('Update failed');
+                }
+            } catch (err) {
+                alert('Error updating profile');
+            }
+        }
+
+        async function loadTrainerProfile() {
+            const user = getCurrentUser();
+            if (!user || user.role !== 'trainer') return;
+            try {
+                const response = await fetch(`/api/trainer/${user._id}/profile`);
+                if (response.ok) {
+                    currentTrainer = await response.json();
+                    document.getElementById('displayName').innerText = currentTrainer.name || user.name;
+                    document.getElementById('displaySpecialty').innerText = currentTrainer.specialty || 'Fitness Trainer';
+                    document.getElementById('displayExperience').innerText = currentTrainer.experience || '0+ years';
+                    document.getElementById('displayCertifications').innerText = currentTrainer.certifications || 'Certified Trainer';
+                    document.getElementById('displayBio').innerText = currentTrainer.bio || 'Passionate about fitness.';
+                    const profileImg = currentTrainer.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(currentTrainer.name)}&background=d4af37&color=fff&size=120`;
+                    document.getElementById('profilePreview').src = profileImg;
+                } else {
+                    // Use data from localStorage
+                    document.getElementById('displayName').innerText = user.name;
+                }
+            } catch (err) {
+                console.error('Profile load error:', err);
+            }
+        }
+
+        async function loadTrainerClasses() {
+            const user = getCurrentUser();
+            if (!user) return;
+            try {
+                const response = await fetch(`/api/trainer/${user._id}/classes`);
+                if (!response.ok) throw new Error('No classes');
+                const classes = await response.json();
+                const tbody = document.getElementById('classesTableBody');
+                if (!classes.length) {
+                    tbody.innerHTML = '<tr><td colspan="7">No classes assigned yet.</td></tr>';
+                    document.getElementById('totalClasses').innerText = '0';
+                    return;
+                }
+                let totalStudents = 0;
+                let upcoming = 0;
+                const today = new Date().toISOString().split('T')[0];
+                let html = '';
+                for (let c of classes) {
+                    const spotsLeft = c.maxCapacity - c.booked;
+                    const isFull = spotsLeft === 0;
+                    totalStudents += c.booked;
+                    if (c.date >= today) upcoming++;
+                    html += `<tr>
+                        <td><strong>${escapeHtml(c.name)}</strong></td>
+                        <td>${formatDate(c.date)}</td>
+                        <td>${formatTime(c.time)}</td>
+                        <td>${escapeHtml(c.location)}</td>
+                        <td>${c.duration} min</td>
+                        <td>${c.booked}/${c.maxCapacity}</td>
+                        <td><span class="status-badge ${isFull ? 'status-full' : 'status-available'}">${isFull ? 'Full' : spotsLeft + ' left'}</span></td>
+                    </tr>`;
+                }
+                tbody.innerHTML = html;
+                document.getElementById('totalClasses').innerText = classes.length;
+                document.getElementById('totalStudents').innerText = totalStudents;
+                document.getElementById('upcomingClasses').innerText = upcoming;
+            } catch (err) {
+                console.error('Classes error:', err);
+                document.getElementById('classesTableBody').innerHTML = '<tr><td colspan="7">No classes assigned yet.</td></tr>';
+            }
+        }
+
+        function formatTime(time) {
+            if (!time) return 'N/A';
+            const [h, m] = time.split(':');
+            const hour = parseInt(h);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            return `${hour12}:${m} ${ampm}`;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return 'N/A';
+            return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Image upload
+        // Image upload with compression
+        function compressImage(file, maxSizeMB = 1, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = (event) => {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+                    const maxWidth = 500;
+                    const maxHeight = 500;
+
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width = Math.round((width * maxHeight) / height);
+                            height = maxHeight;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    let quality = 0.7;
+                    let result = canvas.toDataURL('image/jpeg', quality);
+
+                    // Reduce quality if still too large
+                    while (result.length > maxSizeMB * 1024 * 1024 && quality > 0.3) {
+                        quality -= 0.1;
+                        result = canvas.toDataURL('image/jpeg', quality);
+                    }
+
+                    callback(result);
+                };
+            };
+        }
+
+        // Image upload handler
+        const fileInput = document.getElementById('profileImageUpload');
+        if (fileInput) {
+            fileInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                const statusDiv = document.getElementById('uploadStatus');
+                const user = getCurrentUser();
+
+                if (!file) {
+                    statusDiv.innerHTML = '<span style="color: orange;">No file selected</span>';
+                    return;
+                }
+
+                if (!user || user.role !== 'trainer') {
+                    statusDiv.innerHTML = '<span style="color: red;">Not logged in as trainer</span>';
+                    return;
+                }
+
+                if (file.size > 5 * 1024 * 1024) {
+                    statusDiv.innerHTML = '<span style="color: red;">Image too large! Max 5MB</span>';
+                    return;
+                }
+
+                if (!file.type.startsWith('image/')) {
+                    statusDiv.innerHTML = '<span style="color: red;">Please select an image file</span>';
+                    return;
+                }
+
+                statusDiv.innerHTML = '<span style="color: #d4af37;">📤 Compressing and uploading...</span>';
+
+                compressImage(file, 1, async (compressedBase64) => {
+                    try {
+                        const response = await fetch(`/api/trainer/${user._id}/profile`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ profileImage: compressedBase64 })
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            statusDiv.innerHTML = '<span style="color: #10b981;">✅ Photo updated successfully!</span>';
+                            document.getElementById('profilePreview').src = compressedBase64;
+                            user.profileImage = compressedBase64;
+                            localStorage.setItem('auraUser', JSON.stringify(user));
+                        } else {
+                            statusDiv.innerHTML = `<span style="color: red;">❌ Upload failed: ${data.error || 'Unknown error'}</span>`;
+                        }
+                    } catch (err) {
+                        console.error('Upload error:', err);
+                        statusDiv.innerHTML = '<span style="color: red;">❌ Network error. Make sure backend is running.</span>';
+                    }
+                });
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = getCurrentUser();
+            if (!user || user.role !== 'trainer') {
+                window.location.href = '/login.html';
+                return;
+            }
+            await loadTrainerProfile();
+            await loadTrainerClasses();
+        });
+    </script>
+</body>
+
+</html>
