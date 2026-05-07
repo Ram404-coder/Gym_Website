@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monthly Plan Details</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(180deg, #f7f3ef 0%, #ebe0d2 100%);
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+      display: grid;
+      place-items: center;
+    }
+    .page {
+      width: min(100%, 820px);
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(26, 26, 26, 0.08);
+      border-radius: 22px;
+      padding: 1.5rem;
+      box-shadow: 0 24px 60px rgba(17, 24, 39, 0.08);
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      text-decoration: none;
+      color: #555;
+      font-size: 14px;
+      margin-bottom: 1.25rem;
+    }
+    .eyebrow {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #86603d;
+      margin-bottom: 0.6rem;
+    }
+    .hero {
+      display: grid;
+      grid-template-columns: 1.3fr 0.9fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .hero-copy, .hero-card, .panel {
+      border-radius: 18px;
+      padding: 1.35rem;
+      border: 1px solid rgba(26, 26, 26, 0.08);
+      background: #fff;
+    }
+    .hero-copy {
+      background: #fbf5ee;
+    }
+    .hero-copy h1 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1;
+      margin-bottom: 0.8rem;
+      font-weight: 600;
+    }
+    .hero-copy p, .summary p {
+      color: #6d5944;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .hero-card {
+      background: #342111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      background: #f4e5d1;
+      color: #7a4b1f;
+      border-radius: 999px;
+      padding: 0.45rem 0.75rem;
+      font-size: 12px;
+      margin-bottom: 1rem;
+    }
+    .price {
+      font-size: 2.5rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+    .price span {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.75);
+      font-weight: 400;
+    }
+    .card-note {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.5;
+    }
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .panel h2 {
+      font-size: 1rem;
+      margin-bottom: 0.85rem;
+    }
+    .feature-list {
+      list-style: none;
+      display: grid;
+      gap: 0.7rem;
+      color: #5e4d3d;
+      font-size: 14px;
+    }
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+    .feature-list li::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: #d98a34;
+      flex-shrink: 0;
+    }
+    .summary {
+      display: grid;
+      gap: 0.8rem;
+    }
+    .cta-row {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+    .button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 0.95rem 1.2rem;
+      cursor: pointer;
+      font-size: 14px;
+      text-decoration: none;
+      text-align: center;
+    }
+    .button.primary {
+      background: #342111;
+      color: #fff;
+      flex: 1 1 220px;
+    }
+    .button.secondary {
+      background: #f3e8da;
+      color: #342111;
+      flex: 1 1 180px;
+    }
+    @media (max-width: 720px) {
+      .hero, .content { grid-template-columns: 1fr; }
+      .page { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <a class="back-link" href="gym-plans.html">&#8592; Back to plans</a>
+    <p class="eyebrow">Monthly Membership</p>
+    <div class="hero">
+      <section class="hero-copy">
+        <div class="pill" id="plan-tag">Monthly access</div>
+        <h1 id="plan-name">Basic</h1>
+        <p id="plan-desc">A simple monthly membership with consistent access to the gym floor.</p>
+      </section>
+      <aside class="hero-card">
+        <div>
+          <p class="eyebrow" style="color: rgba(255,255,255,0.65); margin-bottom: 0.9rem;">Monthly price</p>
+          <p class="price" id="plan-price">£25 <span>/ month</span></p>
+        </div>
+        <p class="card-note" id="plan-note">A longer-term option for members building a regular training habit.</p>
+      </aside>
+    </div>
+
+    <section class="content">
+      <div class="panel">
+        <h2>Included in this plan</h2>
+        <ul class="feature-list" id="feature-list"></ul>
+      </div>
+      <div class="panel">
+        <h2>Plan summary</h2>
+        <div class="summary">
+          <p id="summary-copy">This monthly membership gives you recurring access to the gym with the option to upgrade as your routine grows.</p>
+          <p>Use this page for checkout, enquiries, or to plug the selected monthly plan into your signup flow.</p>
+        </div>
+        <div class="cta-row">
+          <a class="button primary" id="checkout-link" href="checkout.html?plan=basic-monthly">Continue to checkout</a>
+          <a class="button secondary" href="gym-plans.html">Choose another plan</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const monthlyPlans = {
+      "basic-monthly": {
+        tag: "Monthly access",
+        name: "Basic",
+        desc: "A low-cost monthly option focused on gym-floor access and essentials.",
+        price: "£25",
+        per: "/ month",
+        note: "A straightforward monthly membership for members who want consistency without extras.",
+        summary: "You selected the Basic monthly plan. It gives you recurring access to the gym plus locker and shower facilities.",
+        features: [
+          "Full gym access",
+          "Locker and shower",
+          "Monthly savings versus day passes",
+          "Great for independent routines"
+        ]
+      },
+      "standard-monthly": {
+        tag: "Most popular",
+        name: "Standard",
+        desc: "A complete monthly membership with unlimited classes included.",
+        price: "£45",
+        per: "/ month",
+        note: "A strong everyday membership with flexibility between solo training and guided classes.",
+        summary: "You selected the Standard monthly plan. It includes gym access, facilities, and unlimited classes all month.",
+        features: [
+          "Full gym access",
+          "Locker and shower",
+          "Unlimited group classes",
+          "Best balance of value and variety"
+        ]
+      },
+      "premium-monthly": {
+        tag: "Full experience",
+        name: "Premium",
+        desc: "A high-touch monthly plan with classes and four PT sessions included.",
+        price: "£75",
+        per: "/ month",
+        note: "The most supportive monthly option for members who want structure, coaching, and flexibility.",
+        summary: "You selected the Premium monthly plan. It includes gym access, classes, and four PT sessions each month.",
+        features: [
+          "Full gym access",
+          "Locker and shower",
+          "Unlimited group classes",
+          "4 PT sessions per month"
+        ]
+      }
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const selectedPlan = params.get("plan");
+    const plan = monthlyPlans[selectedPlan] || monthlyPlans["basic-monthly"];
+
+    document.getElementById("plan-tag").textContent = plan.tag;
+    document.getElementById("plan-name").textContent = plan.name;
+    document.getElementById("plan-desc").textContent = plan.desc;
+    document.getElementById("plan-price").innerHTML = `${plan.price} <span>${plan.per}</span>`;
+    document.getElementById("plan-note").textContent = plan.note;
+    document.getElementById("summary-copy").textContent = plan.summary;
+    document.getElementById("feature-list").innerHTML = plan.features.map((feature) => `<li>${feature}</li>`).join("");
+    document.getElementById("checkout-link").href = `checkout.html?plan=${encodeURIComponent(selectedPlan || "basic-monthly")}`;
+  </script>
+</body>
+</html>

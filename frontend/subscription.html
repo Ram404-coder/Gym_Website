@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gym Subscription Plans</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f5f3;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+    .plans-wrap { max-width: 860px; margin: 0 auto; }
+    .section-label { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+    .section-title { font-size: 28px; font-weight: 500; color: #1a1a1a; margin: 0 0 0.25rem; }
+    .section-sub { font-size: 15px; color: #666; margin: 0 0 2rem; }
+    .tab-row { display: flex; gap: 8px; margin-bottom: 1.5rem; }
+    .tab-btn {
+      padding: 7px 20px;
+      border-radius: 8px;
+      border: 0.5px solid #ccc;
+      background: transparent;
+      font-size: 14px;
+      cursor: pointer;
+      color: #666;
+      transition: all 0.15s;
+    }
+    .tab-btn.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+    .plan-card {
+      background: #fff;
+      border: 0.5px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+    .plan-card.featured { border: 2px solid #378ADD; }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 8px;
+      background: #E6F1FB;
+      color: #0C447C;
+      margin-bottom: 10px;
+    }
+    .plan-name { font-size: 16px; font-weight: 500; color: #1a1a1a; margin: 0 0 4px; }
+    .plan-desc { font-size: 13px; color: #888; margin: 0 0 1rem; }
+    .plan-price { font-size: 28px; font-weight: 500; color: #1a1a1a; }
+    .plan-price span { font-size: 14px; font-weight: 400; color: #888; }
+    .divider { border: none; border-top: 0.5px solid #e0e0e0; margin: 1rem 0; }
+    .feature-list { list-style: none; padding: 0; margin: 0 0 1.25rem; }
+    .feature-list li {
+      font-size: 13px;
+      color: #555;
+      padding: 4px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .feature-list li::before {
+      content: '';
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: #e8e8e8;
+      flex-shrink: 0;
+    }
+    .feature-list li.yes::before { background: #EAF3DE; }
+    .feature-list li.no { opacity: 0.4; }
+    .cta-btn {
+      width: 100%;
+      padding: 9px 0;
+      border-radius: 8px;
+      border: 0.5px solid #ccc;
+      background: transparent;
+      font-size: 14px;
+      cursor: pointer;
+      color: #1a1a1a;
+      transition: background 0.15s;
+    }
+    .cta-btn.primary { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+    .cta-btn:hover { opacity: 0.85; }
+    .savings-note { font-size: 12px; color: #3B6D11; margin-top: 6px; text-align: center; }
+  </style>
+</head>
+<body>
+<div class="plans-wrap">
+  <p class="section-label">Membership</p>
+  <h1 class="section-title">Choose your plan</h1>
+  <p class="section-sub">Flexible options to fit your schedule and goals.</p>
+
+  <div class="tab-row">
+    <button class="tab-btn active" onclick="setTab('day', this)">Day pass</button>
+    <button class="tab-btn" onclick="setTab('week', this)">Weekly</button>
+    <button class="tab-btn" onclick="setTab('month', this)">Monthly</button>
+  </div>
+
+  <div id="plans-container"></div>
+</div>
+
+<script>
+const plans = {
+  day: [
+    {
+      name: "Single day", desc: "One-time gym access", price: "£8", per: "/ day",
+      features: [
+        { text: "Full gym access", yes: true }, { text: "Locker & shower", yes: true },
+        { text: "Group classes", yes: false }, { text: "Personal trainer", yes: false }
+      ],
+      cta: "Buy day pass", featured: false
+    },
+    {
+      name: "Day + class", desc: "Gym plus one group class", price: "£12", per: "/ day",
+      features: [
+        { text: "Full gym access", yes: true }, { text: "Locker & shower", yes: true },
+        { text: "1 group class", yes: true }, { text: "Personal trainer", yes: false }
+      ],
+      cta: "Buy day pass", featured: true, badge: "Most popular"
+    }
+  ],
+  week: [
+    {
+      name: "Basic weekly", desc: "7 days of gym access", price: "£30", per: "/ week",
+      features: [
+        { text: "Full gym access", yes: true }, { text: "Locker & shower", yes: true },
+        { text: "Group classes", yes: false }, { text: "Personal trainer", yes: false }
+      ],
+      cta: "Start weekly plan", featured: false, savings: "Save vs daily"
+    },
+    {
+      name: "Standard weekly", desc: "Gym + unlimited classes", price: "£45", per: "/ week",
+      features: [
+        { text: "Full gym access", yes: true }, { text: "Locker & shower", yes: true },
+        { text: "Unlimited classes", yes: true }, { text: "Personal trainer", yes: false }
+      ],
+      cta: "Start weekly plan", featured: true, badge: "Best value", savings: "Save vs daily"
+    },
+    {
+      name: "Premium weekly", desc: "All-inclusive experience", price: "£65", per: "/ week",
+      features: [
+        { text: "Full gym access", yes: true }, { text: "Locker & shower", yes: true },
+        { text: "Unlimited classes", yes: true }, { text: "1 PT session included", yes: true }
+      ],
+      cta: "Start weekly plan", featured: false
+    }
+  ],
+  month: [
+    {
+      name: "Basic", desc: "Just the essentials", price: "£25", per: "/ month",
+      features: [
+        { text: "Full gym access", yes: true }, { text: "Locker & shower", yes: true },
+        { text: "Group classes", yes: false }, { text: "Personal trainer", yes: false }
+      ],
+      cta: "Get started", featured: false, savings: "Save 69% vs daily"
+    },
+    {
+      name: "Standard", desc: "Most members choose this", price: "£45", per: "/ month",
+      features: [
+        { text: "Full gym access", yes: true }, { text: "Locker & shower", yes: true },
+        { text: "Unlimited classes", yes: true }, { text: "Personal trainer", yes: false }
+      ],
+      cta: "Get started", featured: true, badge: "Most popular", savings: "Save 69% vs daily"
+    },
+    {
+      name: "Premium", desc: "The full experience", price: "£75", per: "/ month",
+      features: [
+        { text: "Full gym access", yes: true }, { text: "Locker & shower", yes: true },
+        { text: "Unlimited classes", yes: true }, { text: "4 PT sessions / month", yes: true }
+      ],
+      cta: "Get started", featured: false, savings: "Save 69% vs daily"
+    }
+  ]
+};
+
+function setTab(tab, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render(tab);
+}
+
+function render(tab) {
+  const container = document.getElementById('plans-container');
+  const items = plans[tab];
+  container.innerHTML = `<div class="plans-grid">${items.map(p => `
+    <div class="plan-card ${p.featured ? 'featured' : ''}">
+      ${p.badge ? `<div class="badge">${p.badge}</div>` : ''}
+      <p class="plan-name">${p.name}</p>
+      <p class="plan-desc">${p.desc}</p>
+      <p class="plan-price">${p.price}<span>${p.per}</span></p>
+      <hr class="divider">
+      <ul class="feature-list">
+        ${p.features.map(f => `<li class="${f.yes ? 'yes' : 'no'}">${f.text}</li>`).join('')}
+      </ul>
+      <button class="cta-btn ${p.featured ? 'primary' : ''}">${p.cta}</button>
+      ${p.savings ? `<p class="savings-note">${p.savings}</p>` : ''}
+    </div>`).join('')}
+  </div>`;
+}
+
+render('day');
+</script>
+</body>
+</html>
