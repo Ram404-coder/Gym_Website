@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<title>Gym Notification System</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+body{
+  font-family:'DM Sans',sans-serif;
+  background:#f4f4f4;
+  padding:40px;
+  color:#111;
+}
+
+/* =========================
+   CONFIG PANEL
+========================= */
+
+.config-panel{
+  background:white;
+  padding:20px;
+  border-radius:14px;
+  margin-bottom:20px;
+  border:1px solid rgba(0,0,0,0.08);
+}
+
+.config-title{
+  font-size:18px;
+  font-weight:700;
+  margin-bottom:15px;
+}
+
+.input-group{
+  margin-bottom:15px;
+}
+
+.input-label{
+  display:block;
+  margin-bottom:7px;
+  font-size:13px;
+  font-weight:600;
+}
+
+.input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  font-size:14px;
+}
+
+.save-btn{
+  background:#111;
+  color:white;
+  border:none;
+  padding:12px 18px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+/* =========================
+   LAYOUT
+========================= */
+
+.layout{
+  display:grid;
+  grid-template-columns: 1fr 340px;
+  gap:20px;
+}
+
+.panel{
+  background:white;
+  border-radius:16px;
+  border:1px solid rgba(0,0,0,0.08);
+  padding:20px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.header-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.bell{
+  position:relative;
+}
+
+.bell i{
+  font-size:24px;
+}
+
+.badge{
+  position:absolute;
+  top:-7px;
+  right:-10px;
+  background:red;
+  color:white;
+  min-width:18px;
+  height:18px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:10px;
+  font-weight:700;
+}
+
+.heading{
+  font-size:20px;
+  font-weight:700;
+}
+
+.mark-btn{
+  background:none;
+  border:none;
+  color:#2563eb;
+  cursor:pointer;
+  font-size:13px;
+}
+
+/* =========================
+   NOTIFICATION
+========================= */
+
+.notif-list{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.notif{
+  display:flex;
+  gap:12px;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid rgba(0,0,0,0.08);
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.notif:hover{
+  background:#fafafa;
+}
+
+.notif.unread{
+  border-left:4px solid #2563eb;
+}
+
+.notif-icon{
+  width:42px;
+  height:42px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  flex-shrink:0;
+}
+
+.notif-content{
+  flex:1;
+}
+
+.notif-title{
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:4px;
+}
+
+.notif-message{
+  font-size:13px;
+  color:#555;
+  line-height:1.5;
+}
+
+.notif-time{
+  font-size:11px;
+  color:#888;
+  margin-top:6px;
+}
+
+/* =========================
+   PREFS
+========================= */
+
+.pref-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:12px 0;
+  border-bottom:1px solid rgba(0,0,0,0.08);
+}
+
+.pref-title{
+  font-size:14px;
+  font-weight:600;
+}
+
+.pref-sub{
+  font-size:12px;
+  color:#666;
+  margin-top:3px;
+}
+
+/* toggle */
+
+.switch{
+  position:relative;
+  width:44px;
+  height:24px;
+}
+
+.switch input{
+  opacity:0;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+  background:#ccc;
+  border-radius:999px;
+  cursor:pointer;
+}
+
+.slider::before{
+  content:'';
+  position:absolute;
+  width:18px;
+  height:18px;
+  background:white;
+  border-radius:50%;
+  top:3px;
+  left:3px;
+  transition:0.2s;
+}
+
+.switch input:checked + .slider{
+  background:#2563eb;
+}
+
+.switch input:checked + .slider::before{
+  transform:translateX(20px);
+}
+
+/* =========================
+   DEMO BUTTONS
+========================= */
+
+.demo-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:20px;
+}
+
+.demo-btn{
+  padding:12px;
+  border:none;
+  border-radius:10px;
+  background:#111;
+  color:white;
+  cursor:pointer;
+  font-size:13px;
+}
+
+/* =========================
+   TOAST
+========================= */
+
+.toast-container{
+  position:fixed;
+  top:20px;
+  right:20px;
+  width:320px;
+  z-index:9999;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.toast{
+  background:white;
+  border-radius:14px;
+  padding:14px;
+  border:1px solid rgba(0,0,0,0.08);
+  animation:slide .3s ease;
+}
+
+@keyframes slide{
+  from{
+    opacity:0;
+    transform:translateX(20px);
+  }
+  to{
+    opacity:1;
+    transform:translateX(0);
+  }
+}
+
+@media(max-width:800px){
+
+  .layout{
+    grid-template-columns:1fr;
+  }
+
+  body{
+    padding:20px;
+  }
+
+}
+
+</style>
+</head>
+<body>
+
+<!-- =========================
+     TOASTS
+========================= -->
+
+<div class="toast-container" id="toast-container"></div>
+
+<!-- =========================
+     WEBSITE CONFIG
+========================= -->
+
+<div class="config-panel">
+
+  <div class="config-title">
+    Website Connection Settings
+  </div>
+
+  <div class="input-group">
+    <label class="input-label">
+      Website URL
+    </label>
+
+    <input
+      type="text"
+      class="input"
+      id="website-url"
+      placeholder="https://yourwebsite.com">
+  </div>
+
+  <div class="input-group">
+    <label class="input-label">
+      API Endpoint
+    </label>
+
+    <input
+      type="text"
+      class="input"
+      id="api-url"
+      placeholder="https://yourwebsite.com/api/notifications">
+  </div>
+
+  <div class="input-group">
+    <label class="input-label">
+      WebSocket URL
+    </label>
+
+    <input
+      type="text"
+      class="input"
+      id="ws-url"
+      placeholder="wss://yourwebsite.com/ws">
+  </div>
+
+  <button class="save-btn" onclick="saveConfig()">
+    Save Connection
+  </button>
+
+</div>
+
+<div class="layout">
+
+  <!-- =========================
+       LEFT
+  ========================= -->
+
+  <div class="panel">
+
+    <div class="header">
+
+      <div class="header-left">
+
+        <div class="bell">
+          <i class="ti ti-bell"></i>
+          <div class="badge" id="notif-count">
+            0
+          </div>
+        </div>
+
+        <div class="heading">
+          Notifications
+        </div>
+
+      </div>
+
+      <button class="mark-btn" onclick="markAllRead()">
+        Mark all read
+      </button>
+
+    </div>
+
+    <div class="notif-list" id="notif-list"></div>
+
+    <!-- DEMO -->
+
+    <div class="demo-grid">
+
+      <button class="demo-btn"
+      onclick="demoReminder()">
+        Class Reminder
+      </button>
+
+      <button class="demo-btn"
+      onclick="demoUpdate()">
+        Class Cancelled
+      </button>
+
+      <button class="demo-btn"
+      onclick="demoInactive()">
+        Inactivity
+      </button>
+
+      <button class="demo-btn"
+      onclick="demoProgress()">
+        Progress
+      </button>
+
+      <button class="demo-btn"
+      onclick="demoPromo()">
+        Promotion
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- =========================
+       RIGHT
+  ========================= -->
+
+  <div class="panel">
+
+    <h3 style="margin-bottom:20px">
+      Notification Preferences
+    </h3>
+
+    <div id="prefs"></div>
+
+  </div>
+
+</div>
+
+<script>
+
+/* ===================================
+   CONFIG
+=================================== */
+
+const CONFIG = {
+
+  WEBSITE_URL: '',
+  API_URL: '',
+  WS_URL: ''
+
+};
+
+/* ===================================
+   TYPES
+=================================== */
+
+const TYPES = {
+
+  classReminder:{
+    icon:'ti-calendar-event',
+    bg:'#e0f2fe',
+    color:'#0369a1'
+  },
+
+  classUpdate:{
+    icon:'ti-alert-circle',
+    bg:'#fee2e2',
+    color:'#b91c1c'
+  },
+
+  inactivity:{
+    icon:'ti-activity',
+    bg:'#fef3c7',
+    color:'#92400e'
+  },
+
+  progress:{
+    icon:'ti-trophy',
+    bg:'#ede9fe',
+    color:'#6d28d9'
+  },
+
+  promo:{
+    icon:'ti-speakerphone',
+    bg:'#dcfce7',
+    color:'#15803d'
+  }
+
+};
+
+/* ===================================
+   STATE
+=================================== */
+
+let notifications = [];
+
+let prefs = {
+
+  classReminder:true,
+  classUpdate:true,
+  inactivity:true,
+  progress:true,
+  promo:true
+
+};
+
+/* ===================================
+   SAVE CONFIG
+=================================== */
+
+function saveConfig(){
+
+  CONFIG.WEBSITE_URL =
+  document.getElementById('website-url').value;
+
+  CONFIG.API_URL =
+  document.getElementById('api-url').value;
+
+  CONFIG.WS_URL =
+  document.getElementById('ws-url').value;
+
+  localStorage.setItem(
+    'gymNotifyConfig',
+    JSON.stringify(CONFIG)
+  );
+
+  connectWebSocket();
+
+  fetchNotifications();
+
+  alert('Website connected successfully.');
+
+}
+
+/* ===================================
+   LOAD CONFIG
+=================================== */
+
+function loadConfig(){
+
+  const saved =
+  localStorage.getItem('gymNotifyConfig');
+
+  if(!saved) return;
+
+  const data = JSON.parse(saved);
+
+  Object.assign(CONFIG,data);
+
+  document.getElementById('website-url').value =
+  CONFIG.WEBSITE_URL;
+
+  document.getElementById('api-url').value =
+  CONFIG.API_URL;
+
+  document.getElementById('ws-url').value =
+  CONFIG.WS_URL;
+
+}
+
+/* ===================================
+   PUSH
+=================================== */
+
+function pushNotification(data){
+
+  if(prefs[data.type] === false){
+    return;
+  }
+
+  const type = TYPES[data.type];
+
+  const notif = {
+
+    id:Date.now(),
+    unread:true,
+    time:data.time || 'Just now',
+    ...data,
+    ...type
+
+  };
+
+  notifications.unshift(notif);
+
+  renderNotifications();
+
+  showToast(notif);
+
+}
+
+/* ===================================
+   RENDER
+=================================== */
+
+function renderNotifications(){
+
+  const list =
+  document.getElementById('notif-list');
+
+  list.innerHTML = '';
+
+  notifications.forEach(n => {
+
+    const div =
+    document.createElement('div');
+
+    div.className =
+    `notif ${n.unread ? 'unread' : ''}`;
+
+    div.onclick = () => {
+
+      n.unread = false;
+
+      renderNotifications();
+
+    };
+
+    div.innerHTML = `
+
+      <div class="notif-icon"
+      style="
+      background:${n.bg};
+      color:${n.color};
+      ">
+
+        <i class="ti ${n.icon}"></i>
+
+      </div>
+
+      <div class="notif-content">
+
+        <div class="notif-title">
+          ${n.title}
+        </div>
+
+        <div class="notif-message">
+          ${n.message}
+        </div>
+
+        <div class="notif-time">
+          ${n.time}
+        </div>
+
+      </div>
+
+    `;
+
+    list.appendChild(div);
+
+  });
+
+  updateCount();
+
+}
+
+/* ===================================
+   COUNT
+=================================== */
+
+function updateCount(){
+
+  const unread =
+  notifications.filter(n => n.unread).length;
+
+  document.getElementById('notif-count')
+  .innerText = unread;
+
+}
+
+/* ===================================
+   MARK READ
+=================================== */
+
+function markAllRead(){
+
+  notifications.forEach(n => {
+    n.unread = false;
+  });
+
+  renderNotifications();
+
+}
+
+/* ===================================
+   TOAST
+=================================== */
+
+function showToast(n){
+
+  const container =
+  document.getElementById('toast-container');
+
+  const div =
+  document.createElement('div');
+
+  div.className = 'toast';
+
+  div.innerHTML = `
+
+    <div style="
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    ">
+
+      <div style="
+      font-size:20px;
+      color:${n.color};
+      ">
+
+        <i class="ti ${n.icon}"></i>
+
+      </div>
+
+      <div>
+
+        <div style="
+        font-weight:700;
+        margin-bottom:4px;
+        ">
+
+          ${n.title}
+
+        </div>
+
+        <div style="
+        font-size:13px;
+        color:#666;
+        ">
+
+          ${n.message}
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+  container.appendChild(div);
+
+  setTimeout(() => {
+
+    div.remove();
+
+  },4000);
+
+}
+
+/* ===================================
+   PREFERENCES
+=================================== */
+
+function renderPrefs(){
+
+  const el =
+  document.getElementById('prefs');
+
+  const rows = [
+
+    {
+      id:'classReminder',
+      title:'Class Reminders',
+      sub:'Upcoming booked classes'
+    },
+
+    {
+      id:'classUpdate',
+      title:'Schedule Updates',
+      sub:'Cancelled/rescheduled classes'
+    },
+
+    {
+      id:'inactivity',
+      title:'Inactivity Reminders',
+      sub:'Motivation notifications'
+    },
+
+    {
+      id:'progress',
+      title:'Progress Updates',
+      sub:'Workout streaks and goals'
+    },
+
+    {
+      id:'promo',
+      title:'Promotions',
+      sub:'Offers and campaigns'
+    }
+
+  ];
+
+  el.innerHTML = '';
+
+  rows.forEach(r => {
+
+    const div =
+    document.createElement('div');
+
+    div.className = 'pref-row';
+
+    div.innerHTML = `
+
+      <div>
+
+        <div class="pref-title">
+          ${r.title}
+        </div>
+
+        <div class="pref-sub">
+          ${r.sub}
+        </div>
+
+      </div>
+
+      <label class="switch">
+
+        <input
+        type="checkbox"
+        ${prefs[r.id] ? 'checked' : ''}
+        onchange="togglePref('${r.id}',this.checked)">
+
+        <span class="slider"></span>
+
+      </label>
+
+    `;
+
+    el.appendChild(div);
+
+  });
+
+}
+
+function togglePref(key,val){
+
+  prefs[key] = val;
+
+}
+
+/* ===================================
+   FETCH FROM WEBSITE API
+=================================== */
+
+async function fetchNotifications(){
+
+  if(!CONFIG.API_URL) return;
+
+  try{
+
+    const res =
+    await fetch(CONFIG.API_URL);
+
+    const data =
+    await res.json();
+
+    data.forEach(n => {
+      pushNotification(n);
+    });
+
+  }catch(err){
+
+    console.error(err);
+
+  }
+
+}
+
+/* ===================================
+   WEBSOCKET
+=================================== */
+
+function connectWebSocket(){
+
+  if(!CONFIG.WS_URL) return;
+
+  const ws =
+  new WebSocket(CONFIG.WS_URL);
+
+  ws.onmessage = (event) => {
+
+    const data =
+    JSON.parse(event.data);
+
+    if(data.type === 'notification'){
+
+      pushNotification(data.payload);
+
+    }
+
+  };
+
+}
+
+/* ===================================
+   DEMOS
+=================================== */
+
+function demoReminder(){
+
+  pushNotification({
+
+    type:'classReminder',
+    title:'Class Starting Soon',
+    message:'Your HIIT class starts in 30 mins.'
+
+  });
+
+}
+
+function demoUpdate(){
+
+  pushNotification({
+
+    type:'classUpdate',
+    title:'Class Cancelled',
+    message:'Yoga class has been cancelled.'
+
+  });
+
+}
+
+function demoInactive(){
+
+  pushNotification({
+
+    type:'inactivity',
+    title:'We Miss You!',
+    message:'You have not visited the gym in 7 days.'
+
+  });
+
+}
+
+function demoProgress(){
+
+  pushNotification({
+
+    type:'progress',
+    title:'7 Day Streak',
+    message:'Amazing consistency this week.'
+
+  });
+
+}
+
+function demoPromo(){
+
+  pushNotification({
+
+    type:'promo',
+    title:'50% Discount',
+    message:'Get half price protein shakes today.'
+
+  });
+
+}
+
+/* ===================================
+   INIT
+=================================== */
+
+loadConfig();
+
+renderPrefs();
+
+renderNotifications();
+
+fetchNotifications();
+
+connectWebSocket();
+
+</script>
+
+</body>
+</html>

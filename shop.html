@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Gym Shop</title>
+<link rel="stylesheet" href="s.css">
+</head>
+<body>
+
+    <header class="topbar">
+
+        <div class="nav-left" style="display: flex; gap: 22px; align-items: center;">
+            <button style="
+                background: #FF4A1C;
+                border: none;
+                color: white;
+                font-size: 16px;
+                cursor: pointer;
+                padding: 6px 10px;
+            "
+            onmouseover="this.style.color='white'"
+            onmouseout="this.style.color='white'"
+            onclick="window.location.href='index.html'" >
+            🔙 Back
+            </button>
+        </div>
+
+    <div class="logo">
+        AURA ATHLETICS
+        <span>train with intensity • rise with aura</span>
+    </div>
+
+    <input type="text" id="search" placeholder="Search products..." oninput="filterProducts()">
+
+    <div class="cart-icon">
+        🛒 <span id="cartCount">0</span>
+    </div>
+</header>
+
+<div class="container">
+
+    <!-- PRODUCTS -->
+    <div class="products" id="productList"></div>
+
+    <!-- CART -->
+    <div class="cart">
+        <h3>Your Cart</h3>
+        <div id="cartItems"></div>
+
+        <div class="checkout">
+            <p>Total: $<span id="total">0</span></p>
+            <button onclick="window.location.href='checkout.html'" >Checkout</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- PRODUCT MODAL -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span onclick="closeModal()" class="close">&times;</span>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<script src="s.js"></script>
+
+<footer></footer>
+</body>
+</html>
