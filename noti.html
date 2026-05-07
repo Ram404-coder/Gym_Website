@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Notification System</title>
+<link rel="stylesheet" href="n.css">
+</head>
+<body>
+
+<header class="topbar">
+    <h2>Notification Settings</h2>
+    <button onclick="enableNotifications()" class="btn">Enable Notifications 🔔</button>
+</header>
+
+<div class="container">
+
+    <!-- Class reminder -->
+    <div class="card">
+        <h3>Class Reminders</h3>
+
+        <div class="row">
+            <span>Yoga Class (Tomorrow 7:00 AM)</span>
+
+            <select id="reminderTime">
+                <option value="10">10 mins before</option>
+                <option value="30" selected>30 mins before</option>
+                <option value="60">1 hour before</option>
+            </select>
+
+            <input type="checkbox" id="classReminder" onchange="saveSettings()">
+        </div>
+    </div>
+
+    <!-- Class updates -->
+    <div class="card">
+        <h3>Class Updates</h3>
+
+        <div class="row">
+            <span>Cancellation / Reschedule Alerts</span>
+            <input type="checkbox" id="classUpdates" onchange="saveSettings()">
+        </div>
+    </div>
+
+    <!-- Inactivity -->
+    <div class="card">
+        <h3>Inactivity Reminder</h3>
+
+        <div class="row">
+            <span>Remind me if inactive</span>
+
+            <select id="inactiveDays">
+                <option value="3">3 days</option>
+                <option value="5" selected>5 days</option>
+                <option value="7">7 days</option>
+            </select>
+
+            <input type="checkbox" id="inactiveReminder" onchange="saveSettings()">
+        </div>
+    </div>
+
+    <!-- Progress -->
+    <div class="card">
+        <h3>Progress Updates</h3>
+
+        <div class="row">
+            <span>Attendance streaks</span>
+            <input type="checkbox" id="streaks" onchange="saveSettings()">
+        </div>
+    </div>
+
+    <!-- Promotions -->
+    <div class="card">
+        <h3>Promotions</h3>
+
+        <div class="row">
+            <span>Mute promotions</span>
+            <input type="checkbox" id="mutePromo" onchange="saveSettings()">
+        </div>
+    </div>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
